@@ -6,7 +6,11 @@
         x:Class="Pakagify.MainWindow"
         Title="Pakagify">
 
-    <DockPanel Background="#2A2C35">
+    <Window.Styles>
+        <StyleInclude Source="/Application.axaml"></StyleInclude>
+    </Window.Styles>
+    
+    <DockPanel Classes="app">
         <StackPanel Name="Buttons" Background="#343743" Orientation="Horizontal" Width="300">
             <StackPanel Orientation="Vertical" Spacing="5" Margin="15">
                 <Button Name="NewButton" Click="OnNewButtonClick">New Repository</Button>
