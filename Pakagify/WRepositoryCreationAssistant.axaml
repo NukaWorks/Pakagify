@@ -5,6 +5,7 @@
         mc:Ignorable="d" Width="350" Height="150"
         x:Class="Pakagify.WRepositoryCreationAssistant"
         Title="Open a Github Repository"
-        CanResize="False">
+        CanResize="False"
+        Topmost="True">
     Open a Github Repository
 </Window>
