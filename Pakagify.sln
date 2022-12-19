@@ -2,6 +2,10 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PakagifyCore", "PakagifyCore\PakagifyCore.csproj", "{0D652DAA-8B74-417F-9B1D-3971384846E8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PakagifyCLI", "PakagifyCLI\PakagifyCLI.csproj", "{5E507C50-0B55-4133-AE25-8397E466CCD7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pakagify", "Pakagify\Pakagify.csproj", "{AEA1F1F4-068F-470E-B2C9-E67AAD657CD1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +16,13 @@ Global
 		{0D652DAA-8B74-417F-9B1D-3971384846E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0D652DAA-8B74-417F-9B1D-3971384846E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0D652DAA-8B74-417F-9B1D-3971384846E8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5E507C50-0B55-4133-AE25-8397E466CCD7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5E507C50-0B55-4133-AE25-8397E466CCD7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5E507C50-0B55-4133-AE25-8397E466CCD7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5E507C50-0B55-4133-AE25-8397E466CCD7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AEA1F1F4-068F-470E-B2C9-E67AAD657CD1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AEA1F1F4-068F-470E-B2C9-E67AAD657CD1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AEA1F1F4-068F-470E-B2C9-E67AAD657CD1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AEA1F1F4-068F-470E-B2C9-E67AAD657CD1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

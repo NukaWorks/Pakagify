@@ -1,0 +1,30 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" Height="660" Width="920"
+        x:Class="Pakagify.MainWindow"
+        Title="Pakagify">
+
+    <DockPanel Background="#2A2C35">
+        <StackPanel Name="Buttons" Background="#343743" Orientation="Horizontal" Width="300">
+            <StackPanel Orientation="Vertical" Spacing="5" Margin="15">
+                <Button Name="NewButton" Click="OnNewButtonClick">New Repository</Button>
+                <Button Name="OpenButton">Open Repository</Button>
+            </StackPanel>
+        </StackPanel>
+        
+        <StackPanel Spacing="5" Margin="15">
+            <TextBlock 
+                FontWeight="Medium"
+                FontFamily="Proxima Nova"
+                FontSize="32">
+                Recent Repositories
+            </TextBlock>
+            
+            <ScrollViewer>
+                Nothing <!-- Create an ListItem of the Repository. -->
+            </ScrollViewer>
+        </StackPanel>
+    </DockPanel>
+</Window>
