@@ -16,6 +16,6 @@ public partial class MainWindow : Window
     public void OnNewButtonClick(object? sender, RoutedEventArgs routedEventArgs)
     {
         var newRepoWindow = new WRepositoryCreationAssistant();
-        newRepoWindow.Show();
+        newRepoWindow.ShowDialog(this);
     }
 }
