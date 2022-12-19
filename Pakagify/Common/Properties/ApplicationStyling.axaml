@@ -10,4 +10,8 @@
     <Style Selector="DockPanel.app">
         <Setter Property="Background" Value="#2A2C35" />
     </Style>
+    
+    <Style Selector="RelativePanel.app">
+        <Setter Property="Background" Value="#2A2C35" />
+    </Style>
 </Styles>
