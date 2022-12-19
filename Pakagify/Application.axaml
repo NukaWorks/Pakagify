@@ -7,4 +7,7 @@
     </Design.PreviewWith>
 
     <!-- Add Styles Here -->
+    <Style Selector="DockPanel.app">
+        <Setter Property="Background" Value="#2A2C35" />
+    </Style>
 </Styles>
