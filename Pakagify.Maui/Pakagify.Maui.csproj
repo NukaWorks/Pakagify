@@ -81,7 +81,7 @@
 	  <BundleResource Include="Resources\Fonts\PlayfairDisplay.ttf" />
 	</ItemGroup>
 	<ItemGroup>
-	  <ProjectReference Include="..\PakagifyCore\PakagifyCore.csproj" />
+	  <ProjectReference Include="..\Pakagify.Core\Pakagify.Core.csproj" />
 	</ItemGroup>
 	<ItemGroup>
 	  <MauiFont Remove="Resources\Fonts\PlayfairDisplay-Italic.ttf" />
@@ -96,6 +96,9 @@
 	  </MauiXaml>
 	  <MauiXaml Condition=" '$(EnableDefaultXamlItems)' == 'true' " Update="Views\MainPage.xaml">
 	    <SubType>Designer</SubType>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\RepositoryAssistant.xaml">
+	    <SubType></SubType>
 	  </MauiXaml>
 	</ItemGroup>
 </Project>
