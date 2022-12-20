@@ -58,12 +58,22 @@
 	<ItemGroup>
 	  <None Remove="Resources\Fonts\PlayfairDisplay-Italic-VariableFont_wght.ttf" />
 	  <None Remove="Resources\Fonts\PlayfairDisplay-VariableFont_wght.ttf" />
+	  <None Remove="Resources\Fonts\PlayfairDisplay-Italic.ttf" />
+	  <None Remove="Resources\Fonts\PlayfairDisplay.ttf" />
 	</ItemGroup>
 	<ItemGroup>
+	  <BundleResource Include="Resources\Fonts\PlayfairDisplay-Italic.ttf" />
+	  <BundleResource Include="Resources\Fonts\PlayfairDisplay.ttf" />
+	  <BundleResource Include="Resources\Fonts\PlayfairDisplay-Italic.ttf" />
+	  <BundleResource Include="Resources\Fonts\PlayfairDisplay.ttf" />
 	  <BundleResource Include="Resources\Fonts\PlayfairDisplay-Italic.ttf" />
 	  <BundleResource Include="Resources\Fonts\PlayfairDisplay.ttf" />
 	</ItemGroup>
 	<ItemGroup>
 	  <ProjectReference Include="..\PakagifyCore\PakagifyCore.csproj" />
+	</ItemGroup>
+	<ItemGroup>
+	  <MauiFont Remove="Resources\Fonts\PlayfairDisplay-Italic.ttf" />
+	  <MauiFont Remove="Resources\Fonts\PlayfairDisplay.ttf" />
 	</ItemGroup>
 </Project>
