@@ -3,11 +3,13 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Pakagify.Maui.MainPage">
 
-    <VerticalStackLayout
-        BackgroundColor="#2A2C35"
-        WidthRequest="300">
-        <Button Text="New Repository"/>
-        <Button Text="Open Repository"/>
-    </VerticalStackLayout>
+    <FlexLayout>
+        <VerticalStackLayout
+            BackgroundColor="#2A2C35"
+            WidthRequest="300">
+                <Button Text="New Repository"/>
+                <Button Text="Open Repository"/>
+        </VerticalStackLayout>
+    </FlexLayout>
 </ContentPage>
 
