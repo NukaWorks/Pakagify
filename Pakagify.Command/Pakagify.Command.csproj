@@ -6,10 +6,10 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <AssemblyName>PakagifyCLI</AssemblyName>
-        <BaseDirectory>..\Pakagify.Command</BaseDirectory>
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Pakagify.Core\Pakagify.Core.csproj" />
+      <ProjectReference Include="..\PakagifyCore\PakagifyCore.csproj" />
     </ItemGroup>
+
 </Project>

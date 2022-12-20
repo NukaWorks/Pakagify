@@ -1,11 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pakagify.Core", "PakagifyCore\Pakagify.Core.csproj", "{0D652DAA-8B74-417F-9B1D-3971384846E8}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pakagify.Command", "PakagifyCLI\Pakagify.Command.csproj", "{5E507C50-0B55-4133-AE25-8397E466CCD7}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pakagify.Maui", "Pakagify.Maui\Pakagify.Maui.csproj", "{66364C5B-1593-4E61-B81D-BE262A54E558}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pakagify.Core", "Pakagify.Core\Pakagify.Core.csproj", "{48AC2082-47C2-4F5A-ABAD-E099A36CB4E1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,5 +25,9 @@ Global
 		{66364C5B-1593-4E61-B81D-BE262A54E558}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{66364C5B-1593-4E61-B81D-BE262A54E558}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{66364C5B-1593-4E61-B81D-BE262A54E558}.Release|Any CPU.Build.0 = Release|Any CPU
+		{48AC2082-47C2-4F5A-ABAD-E099A36CB4E1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{48AC2082-47C2-4F5A-ABAD-E099A36CB4E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{48AC2082-47C2-4F5A-ABAD-E099A36CB4E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{48AC2082-47C2-4F5A-ABAD-E099A36CB4E1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

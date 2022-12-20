@@ -1,15 +1,15 @@
 ﻿using System.Text.Json.Nodes;
 using Octokit;
 
-namespace PakagifyCore;
+namespace Pakagify.Core;
 
-public class PakagifyCore
+public class Pakagify
 {
     public GitHubClient Github = new GitHubClient(new ProductHeaderValue("PakagifyCore"));
     public String RepositoryOwner;
     public String RepositoryName;
     
-    public PakagifyCore(String owner, String projectName, String repoName)
+    public Pakagify(String owner, String projectName, String repoName)
     {
         this.RepositoryOwner = owner;
         this.RepositoryName = projectName;
