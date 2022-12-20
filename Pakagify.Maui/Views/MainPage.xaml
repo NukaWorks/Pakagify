@@ -8,10 +8,21 @@
         <VerticalStackLayout
             BackgroundColor="#343743"
             WidthRequest="300"
-            Spacing="5">
+            Spacing="5"
+            Padding="30">
                 <Button Text="New Repository"/>
                 <Button Text="Open Repository"/>
         </VerticalStackLayout>
+        <ScrollView Padding="0 0 0 10">
+            <VerticalStackLayout>
+                <Label
+                    FontFamily="PlayFair Display"
+                    FontSize="48">
+                        Recents Used
+                </Label>
+                <Label>-- Future goes here --</Label>
+            </VerticalStackLayout>
+        </ScrollView>
     </FlexLayout>
 </ContentPage>
 
