@@ -6,11 +6,15 @@ import { AppActivity, Button, DialogOverlayContext, openDialogOverlay, StackLayo
 export default function RecentView () {
   const context = React.useContext(DialogOverlayContext)
 
+  const handleProjectDiscovery = () => {
+    if (!window.localStorage.getItem('gh-token')) openDialogOverlay(context, 'github-token')
+  }
+
   return (
     <AppActivity theme={'Light'}>
       <div className={'App__SidePanel'}>
-        <Button size={'Medium'} color={'Primary'} onClick={() => openDialogOverlay(context, 'github-token')}>Nouveau Projet</Button>
-        <Button size={'Medium'}>Project Existant</Button>
+          <Button size={'Medium'} color={'Primary'} onClick={handleProjectDiscovery}>Nouveau Repository</Button>
+          <Button size={'Medium'}>Repository Existant</Button>
       </div>
 
       <UiApp>
