@@ -561,10 +561,10 @@
     "@octokit/webhooks-types" "6.7.0"
     aggregate-error "^3.1.0"
 
-"@powerws/uikit@^0.122.0":
-  version "0.122.0"
-  resolved "https://registry.yarnpkg.com/@powerws/uikit/-/uikit-0.122.0.tgz#0027ef54a2efd437382f64f0599a2c7a95eca21f"
-  integrity sha512-jjjuFGgSmW85dT8FraIq2Q0awF17RDKnX+JV3AwDpp/Mx/al9ASv7al5RjvZQp5kcJi1FoDL7vEzWSx4czFveA==
+"@powerws/uikit@^0.125.0":
+  version "0.125.0"
+  resolved "https://registry.yarnpkg.com/@powerws/uikit/-/uikit-0.125.0.tgz#f7061a11418e91726526ad7fdfc56310f8de5856"
+  integrity sha512-kvBBNBuNE4hrICwlYkcAL0LWHSF6f3eynU+XDdKdn6KfuH50YDFHcSJfQfO0Ay/QQ9WNLP/IC3KuFDAM1lnnBA==
   dependencies:
     react "^18.2.0"
     react-detect-click-outside "^1.1.7"

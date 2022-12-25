@@ -8,7 +8,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@powerws/uikit": "^0.122.0",
+    "@powerws/uikit": "^0.125.0",
     "react-detect-click-outside": "^1.1.7",
     "octokit": "^2.0.10",
     "react": "^18.2.0",
