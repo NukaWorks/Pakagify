@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import MainWindow from './Views/MainWindow'
 import {
   Button,
@@ -15,10 +15,26 @@ import { useDetectClickOutside } from 'react-detect-click-outside'
 function GithubDialog ({ ...props }) {
   const context = React.useContext(DialogOverlayContext)
   const inputRef = React.useRef(null)
+  const [token, setToken] = React.useState(null)
 
-  const handleToken = () => {
-    console.log(inputRef.current.value)
-    closeDialogOverlay(context)
+  // Reset the token when the dialog is closed
+  useEffect(() => {
+    if (context.displayed === '') setToken(null)
+  }, [context.displayed])
+
+  const validateToken = () => {
+    if (token) {
+      console.log(inputRef.current.value)
+      closeDialogOverlay(context)
+    }
+  }
+
+  const parseToken = () => {
+    if (inputRef.current.value.length >= 40 && inputRef.current.value.match('^ghp_[a-zA-Z0-9]{36}$')) {
+      setToken(inputRef.current.value)
+    } else {
+      setToken(null)
+    }
   }
 
   return (
@@ -26,9 +42,10 @@ function GithubDialog ({ ...props }) {
       <FlexLayout direction={'Vertical'} spacing={15}>
         <Text size={13}>Create a Github Token</Text>
         <StackLayout spacing={5}>
-          <TextField ref={inputRef} type={'password'} placeholder={'Github Token'} />
-          <Button color={'Primary'}
-                  onClick={() => window.open('https://github.com/settings/tokens/new?description=Pakagify&scopes=repo%2Cgist%2Cread%3Aorg%2Cworkflow')}
+          <TextField onChange={parseToken} ref={inputRef} type={'password'} placeholder={'Github Token'} />
+          <Button
+            color={'Primary'}
+            onClick={() => window.open('https://github.com/settings/tokens/new?description=Pakagify&scopes=repo%2Cgist%2Cread%3Aorg%2Cworkflow')}
           >
             Generate
           </Button>
@@ -36,7 +53,7 @@ function GithubDialog ({ ...props }) {
 
         <FlexLayout justifyContent={'End'} direction={'Horizontal'} spacing={5}>
           <Button onClick={() => closeDialogOverlay(context)}>Cancel</Button>
-          <Button color={'Primary'} onClick={handleToken}>OK</Button>
+          <Button disabled={!token} color={'Primary'} onClick={validateToken}>OK</Button>
         </FlexLayout>
       </FlexLayout>
     </DialogOverlay>
