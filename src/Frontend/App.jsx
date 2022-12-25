@@ -28,7 +28,10 @@ function GithubDialog ({ ...props }) {
         <StackLayout spacing={5}>
           <TextField ref={inputRef} type={'password'} placeholder={'Github Token'} />
           <Button color={'Primary'}
-                  onClick={() => window.open('https://github.com/settings/tokens/new?description=Pakagify&scopes=repo%2Cgist%2Cread%3Aorg%2Cworkflow')}>Generate</Button>
+                  onClick={() => window.open('https://github.com/settings/tokens/new?description=Pakagify&scopes=repo%2Cgist%2Cread%3Aorg%2Cworkflow')}
+          >
+            Generate
+          </Button>
         </StackLayout>
 
         <FlexLayout justifyContent={'End'} direction={'Horizontal'} spacing={5}>
