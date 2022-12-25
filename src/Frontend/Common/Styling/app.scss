@@ -23,7 +23,11 @@
     width: 20em;
     gap: 1em;
     align-items: center;
-    padding-block: 2em;
+    padding: 2em;
+
+    & .Button {
+      width: 100%;
+    }
   }
 }
 
