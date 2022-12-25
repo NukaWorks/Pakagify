@@ -24,7 +24,7 @@ function GithubDialog ({ ...props }) {
 
   const validateToken = () => {
     if (token) {
-      console.log(inputRef.current.value)
+      window.localStorage.setItem('gh-token', token.toString())
       closeDialogOverlay(context)
     }
   }
@@ -42,7 +42,7 @@ function GithubDialog ({ ...props }) {
       <FlexLayout direction={'Vertical'} spacing={15}>
         <Text size={13}>Create a Github Token</Text>
         <StackLayout spacing={5}>
-          <TextField onChange={parseToken} ref={inputRef} type={'password'} placeholder={'Github Token'} />
+          <TextField onChange={parseToken} invalid={!token} ref={inputRef} type={'password'} placeholder={'Github Token'} />
           <Button
             color={'Primary'}
             onClick={() => window.open('https://github.com/settings/tokens/new?description=Pakagify&scopes=repo%2Cgist%2Cread%3Aorg%2Cworkflow')}
@@ -60,6 +60,36 @@ function GithubDialog ({ ...props }) {
   )
 }
 
+function ProjectExplorerDialog ({ ...props }) {
+  const context = React.useContext(DialogOverlayContext)
+
+  return (
+      <DialogOverlay name={'project-explorer'} {...props}>
+         <FlexLayout direction={'Vertical'} spacing={15}>
+            <Text size={13}>Project Explorer</Text>
+            <StackLayout spacing={5}>
+               <TextField onChange={() => {}} invalid={false} ref={null} type={'text'} placeholder={'Project Name'} />
+            </StackLayout>
+         </FlexLayout>
+      </DialogOverlay>
+  )
+}
+
+function RepositoryCreatorDialog ({ ...props }) {
+  const context = React.useContext(DialogOverlayContext)
+
+  return (
+      <DialogOverlay name={'repo-creator'} {...props}>
+         <FlexLayout direction={'Vertical'} spacing={15}>
+            <Text size={13}>Create a new repository</Text>
+            <StackLayout spacing={5}>
+               <TextField onChange={() => {}} invalid={false} ref={null} type={'text'} placeholder={'Project Name'} />
+            </StackLayout>
+         </FlexLayout>
+      </DialogOverlay>
+  )
+}
+
 export default function App () {
   const [displayed, setDisplayed] = React.useState('')
   const ref = useDetectClickOutside({ onTriggered: async () => setDisplayed('') })
@@ -67,6 +97,8 @@ export default function App () {
   return (
     <DialogOverlayContext.Provider value={{ displayed, setDisplayed }}>
       <GithubDialog contentRef={ref}/>
+      <RepositoryCreatorDialog contentRef={ref}/>
+      <ProjectExplorerDialog contentRef={ref}/>
       <MainWindow />
     </DialogOverlayContext.Provider>
   )
