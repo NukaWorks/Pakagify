@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import MainWindow from './Views/MainWindow'
 import {
   Button,
@@ -11,6 +11,12 @@ import {
   TextField
 } from '@powerws/uikit'
 import { useDetectClickOutside } from 'react-detect-click-outside'
+import { Pakagify } from '../Backend/Pakagify'
+
+let pakagify = null
+if (window.localStorage.getItem('gh-token')) {
+  pakagify = new Pakagify(window.localStorage.getItem('gh-token'))
+}
 
 function GithubDialog ({ ...props }) {
   const context = React.useContext(DialogOverlayContext)
@@ -25,6 +31,7 @@ function GithubDialog ({ ...props }) {
   const validateToken = () => {
     if (token) {
       window.localStorage.setItem('gh-token', token.toString())
+      pakagify = new Pakagify(token) // Refresh Pakagify instance
       closeDialogOverlay(context)
     }
   }
@@ -63,12 +70,22 @@ function GithubDialog ({ ...props }) {
 function ProjectExplorerDialog ({ ...props }) {
   const context = React.useContext(DialogOverlayContext)
 
+  useEffect(() => {
+    if (context.displayed === 'repo-explorer') {
+      pakagify.getRepos().then(r => {
+        console.log(r)
+      })
+    }
+  }, [context.displayed])
+
   return (
-      <DialogOverlay name={'project-explorer'} {...props}>
+      <DialogOverlay name={'repo-explorer'} {...props}>
          <FlexLayout direction={'Vertical'} spacing={15}>
             <Text size={13}>Project Explorer</Text>
             <StackLayout spacing={5}>
-               <TextField onChange={() => {}} invalid={false} ref={null} type={'text'} placeholder={'Project Name'} />
+               <StackLayout direction={'Horizontal'}>
+
+               </StackLayout>
             </StackLayout>
          </FlexLayout>
       </DialogOverlay>
@@ -77,13 +94,26 @@ function ProjectExplorerDialog ({ ...props }) {
 
 function RepositoryCreatorDialog ({ ...props }) {
   const context = React.useContext(DialogOverlayContext)
+  const inputRef = React.useRef(null)
+  const [isValid, setIsValid] = useState(false)
+
+  // Reset isValid when the dialog is closed
+  useEffect(() => {
+    if (context.displayed === '') setIsValid(null)
+  }, [context.displayed])
+
+  const handleForm = () => {
+    if (inputRef.current.value.length > 0) setIsValid(true)
+    else setIsValid(false)
+  }
 
   return (
       <DialogOverlay name={'repo-creator'} {...props}>
          <FlexLayout direction={'Vertical'} spacing={15}>
             <Text size={13}>Create a new repository</Text>
             <StackLayout spacing={5}>
-               <TextField onChange={() => {}} invalid={false} ref={null} type={'text'} placeholder={'Project Name'} />
+               <TextField onChange={handleForm} invalid={!isValid} ref={inputRef} type={'text'} placeholder={'Project Name'} />
+              <Button color={'Primary'}>Create</Button>
             </StackLayout>
          </FlexLayout>
       </DialogOverlay>
