@@ -1,10 +1,13 @@
+import { EventEmitter } from 'events'
 
-export class Pakagify {
+export class Pakagify extends EventEmitter {
   baseUrl = 'https://api.github.com'
   ghToken = ''
   fetchParams = {}
   user = {}
+  isReady = false
   constructor (token) {
+    super()
     this.ghToken = token
 
     this.fetchParams = {
@@ -15,6 +18,8 @@ export class Pakagify {
 
     this._getUser().then(res => {
       this.user = res
+      this.isReady = true
+      this.emit('ready', this)
     })
   }
 
@@ -23,6 +28,7 @@ export class Pakagify {
   }
 
   async getRepos () {
-    return (await fetch(`${this.baseUrl}/users/${this.user.login}`, this.fetchParams)).json()
+    if (this.isReady) return (await fetch(`${this.baseUrl}/users/${this.user.login}/repos`, this.fetchParams)).json()
+    else throw new Error('Pakagify not ready yet.')
   }
 }
