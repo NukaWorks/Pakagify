@@ -90,31 +90,27 @@ function ProjectExplorerDialog ({ ...props }) {
 
   return (
     <DialogOverlay name={'repo-explorer'} {...props}>
-      <FlexLayout direction={'Vertical'} height={500} width={600} spacing={15}>
         {!loaded
           ? (
-            <FlexLayout justifyContent={'Center'} alignItems={'Center'} flex={1}>
+            <FlexLayout justifyContent={'Center'} alignItems={'Center'} flex={1} width={500} height={500}>
               <Spinner size={'Small'} color={'Blue'}/>
             </FlexLayout>
             )
           : (
             <>
               <Text size={13}>Project Explorer</Text>
-              <FlexLayout direction={'Vertical'} spacing={5}>
-                <ScrollLayout>
-                  {data.map((repo, index) => (
-                    <StackLayout key={index} onClick={() => console.log(repo.id)} direction={'Horizontal'} spacing={5}>
-                      <Link>{repo.full_name}</Link>
-                      <Text style={{ whiteSpace: 'nowrap' }} size={10}>{repo.description ? repo.description : 'No description yet.'}</Text>
-                      <Text size={10} disabled>Visibility: {repo.visibility}</Text>
-                    </StackLayout>
-                  ))}
-                </ScrollLayout>
-              </FlexLayout>
+              <ScrollLayout width={500} height={500}>
+                {data.map((repo, index) => (
+                  <StackLayout key={index} onClick={() => console.log(repo.id)} direction={'Horizontal'} spacing={5}>
+                    <Link>{repo.full_name}</Link>
+                    <Text style={{ whiteSpace: 'nowrap' }}
+                          size={10}>{repo.description ? repo.description : 'No description yet.'}</Text>
+                    <Text size={10} disabled>Visibility: {repo.visibility}</Text>
+                  </StackLayout>
+                ))}
+              </ScrollLayout>
             </>
             )}
-
-      </FlexLayout>
     </DialogOverlay>
   )
 }
