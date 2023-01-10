@@ -415,7 +415,7 @@
     "@octokit/request-error" "^3.0.0"
     "@octokit/types" "^8.0.0"
 
-"@octokit/core@^4.0.0", "@octokit/core@^4.0.4":
+"@octokit/core@^4.0.0", "@octokit/core@^4.0.4", "@octokit/core@^4.1.0":
   version "4.1.0"
   resolved "https://registry.yarnpkg.com/@octokit/core/-/core-4.1.0.tgz#b6b03a478f1716de92b3f4ec4fd64d05ba5a9251"
   integrity sha512-Czz/59VefU+kKDy+ZfDwtOIYIkFjExOKf+HA92aiTZJ6EfWpFzYQWw0l54ji8bVmyhc+mGaLUbSUmXazG7z5OQ==
@@ -561,10 +561,10 @@
     "@octokit/webhooks-types" "6.7.0"
     aggregate-error "^3.1.0"
 
-"@powerws/uikit@^0.125.0":
-  version "0.125.0"
-  resolved "https://registry.yarnpkg.com/@powerws/uikit/-/uikit-0.125.0.tgz#f7061a11418e91726526ad7fdfc56310f8de5856"
-  integrity sha512-kvBBNBuNE4hrICwlYkcAL0LWHSF6f3eynU+XDdKdn6KfuH50YDFHcSJfQfO0Ay/QQ9WNLP/IC3KuFDAM1lnnBA==
+"@powerws/uikit@0.174.0":
+  version "0.174.0"
+  resolved "https://registry.yarnpkg.com/@powerws/uikit/-/uikit-0.174.0.tgz#f3b01841da5209e555c5dea0c2323e1335cfa8c2"
+  integrity sha512-vjjPsrpcySw+ABpJ8vxU3fn26SZ2/OoU2XqK0JAlEwMdmbH4lCmygGr+3RWQrq5+Q/L54HhUlDOy3MLHVvW45w==
   dependencies:
     react "^18.2.0"
     react-detect-click-outside "^1.1.7"
@@ -1361,6 +1361,11 @@ esutils@^2.0.2:
   version "2.0.3"
   resolved "https://registry.yarnpkg.com/esutils/-/esutils-2.0.3.tgz#74d2eb4de0b8da1293711910d50775b9b710ef64"
   integrity sha512-kVscqXk4OCp68SZ0dkgEKVi6/8ij300KBWTJq32P/dYeWTSwK41WyTxalN1eRmA5Z9UU/LX9D7FWSmV9SAYx6g==
+
+events@^3.3.0:
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/events/-/events-3.3.0.tgz#31a95ad0a924e2d2c419a813aeb2c4e878ea7400"
+  integrity sha512-mQw+2fkQbALzQ7V0MY0IqdnXNOeTtP4r0lN9z7AAawCXgqea7bDii20AYrIBrFd/Hx0M2Ocz6S111CaFkUcb0Q==
 
 fast-deep-equal@^3.1.1, fast-deep-equal@^3.1.3:
   version "3.1.3"
