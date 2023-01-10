@@ -6,6 +6,9 @@ import {
   DialogOverlay,
   DialogOverlayContext,
   FlexLayout,
+  Link,
+  ScrollLayout,
+  Spinner,
   StackLayout,
   Text,
   TextField
@@ -49,7 +52,8 @@ function GithubDialog ({ ...props }) {
       <FlexLayout direction={'Vertical'} spacing={15}>
         <Text size={13}>Create a Github Token</Text>
         <StackLayout spacing={5}>
-          <TextField onChange={parseToken} invalid={!token} ref={inputRef} type={'password'} placeholder={'Github Token'} />
+          <TextField onChange={parseToken} invalid={!token} ref={inputRef} type={'password'}
+                     placeholder={'Github Token'}/>
           <Button
             color={'Primary'}
             onClick={() => window.open('https://github.com/settings/tokens/new?description=Pakagify&scopes=repo%2Cgist%2Cread%3Aorg%2Cworkflow')}
@@ -69,26 +73,49 @@ function GithubDialog ({ ...props }) {
 
 function ProjectExplorerDialog ({ ...props }) {
   const context = React.useContext(DialogOverlayContext)
+  const [loaded, setLoaded] = useState(false)
+  const [data, setData] = useState(null)
 
   useEffect(() => {
     if (context.displayed === 'repo-explorer') {
-      pakagify.getRepos().then(r => {
-        console.log(r)
-      })
+      if (pakagify.isReady) {
+        pakagify.getRepos().then(r => {
+          console.log(r)
+          setData(r)
+          setLoaded(true)
+        })
+      }
     }
   }, [context.displayed])
 
   return (
-      <DialogOverlay name={'repo-explorer'} {...props}>
-         <FlexLayout direction={'Vertical'} spacing={15}>
-            <Text size={13}>Project Explorer</Text>
-            <StackLayout spacing={5}>
-               <StackLayout direction={'Horizontal'}>
+    <DialogOverlay name={'repo-explorer'} {...props}>
+      <FlexLayout direction={'Vertical'} height={500} width={600} spacing={15}>
+        {!loaded
+          ? (
+            <FlexLayout justifyContent={'Center'} alignItems={'Center'} flex={1}>
+              <Spinner size={'Small'} color={'Blue'}/>
+            </FlexLayout>
+            )
+          : (
+            <>
+              <Text size={13}>Project Explorer</Text>
+              <FlexLayout direction={'Vertical'} spacing={5}>
+                <ScrollLayout>
+                  {data.map((repo, index) => (
+                    <StackLayout key={index} onClick={() => console.log(repo.id)} direction={'Horizontal'} spacing={5}>
+                      <Link>{repo.full_name}</Link>
+                      <Text style={{ whiteSpace: 'nowrap' }} size={10}>{repo.description ? repo.description : 'No description yet.'}</Text>
+                      <Text size={10} disabled>Visibility: {repo.visibility}</Text>
+                    </StackLayout>
+                  ))}
+                </ScrollLayout>
+              </FlexLayout>
+            </>
+            )}
 
-               </StackLayout>
-            </StackLayout>
-         </FlexLayout>
-      </DialogOverlay>
+      </FlexLayout>
+    </DialogOverlay>
   )
 }
 
@@ -108,15 +135,16 @@ function RepositoryCreatorDialog ({ ...props }) {
   }
 
   return (
-      <DialogOverlay name={'repo-creator'} {...props}>
-         <FlexLayout direction={'Vertical'} spacing={15}>
-            <Text size={13}>Create a new repository</Text>
-            <StackLayout spacing={5}>
-               <TextField onChange={handleForm} invalid={!isValid} ref={inputRef} type={'text'} placeholder={'Project Name'} />
-              <Button color={'Primary'}>Create</Button>
-            </StackLayout>
-         </FlexLayout>
-      </DialogOverlay>
+    <DialogOverlay name={'repo-creator'} {...props}>
+      <FlexLayout direction={'Vertical'} spacing={15}>
+        <Text size={13}>Create a new repository</Text>
+        <StackLayout spacing={5}>
+          <TextField onChange={handleForm} invalid={!isValid} ref={inputRef} type={'text'}
+                     placeholder={'Project Name'}/>
+          <Button color={'Primary'}>Create</Button>
+        </StackLayout>
+      </FlexLayout>
+    </DialogOverlay>
   )
 }
 
@@ -129,7 +157,7 @@ export default function App () {
       <GithubDialog contentRef={ref}/>
       <RepositoryCreatorDialog contentRef={ref}/>
       <ProjectExplorerDialog contentRef={ref}/>
-      <MainWindow />
+      <MainWindow/>
     </DialogOverlayContext.Provider>
   )
 }
