@@ -16,14 +16,14 @@ export class Pakagify extends EventEmitter {
       }
     }
 
-    this._getUser().then(res => {
+    this.#getUser().then(res => {
       this.user = res
       this.isReady = true
       this.emit('ready', this)
     })
   }
 
-  async _getUser () {
+  async #getUser () {
     return (await fetch(`${this.baseUrl}/user`, this.fetchParams)).json()
   }
 
