@@ -1,5 +1,5 @@
 import React from 'react'
-import { AppActivity, StackLayout, Text, UiApp } from '@powerws/uikit'
+import { AppActivity, Button, StackLayout, Text, UiApp } from '@powerws/uikit'
 import Sidebar from '../Common/Components/Sidebar'
 
 export default function ProjectView () {
@@ -10,12 +10,13 @@ export default function ProjectView () {
       </Sidebar>
 
       <UiApp>
-        <div className={'App__Header'}>
-          <h1 className={'App__Header--Title'}>Proj</h1>
-          <StackLayout direction={'Vertical'}>
-            Nothing goes here
+          <StackLayout direction={'Horizontal'} className={'Toolbar'} style={{ paddingBlock: 10, gap: 5 }}>
+            <Button>New</Button>
+            <Button>Open</Button>
+            <Button color={'Primary'}>Build</Button>
+            <Button color={'Warning'}>Sync</Button>
+            <Button color={'Alert'}>Push</Button>
           </StackLayout>
-        </div>
       </UiApp>
     </AppActivity>
   )
