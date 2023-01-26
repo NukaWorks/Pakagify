@@ -1,5 +1,6 @@
 import React from 'react'
 import { AppActivity, Button, DialogOverlayContext, openDialogOverlay, StackLayout, UiApp } from '@powerws/uikit'
+import Sidebar from '../Common/Components/Sidebar'
 
 export default function RecentView () {
   const context = React.useContext(DialogOverlayContext)
@@ -23,10 +24,10 @@ export default function RecentView () {
 
   return (
     <AppActivity theme={'Light'}>
-      <div className={'App__SidePanel'}>
+      <Sidebar>
           <Button size={'Medium'} color={'Primary'} onClick={handleNewRepository}>Nouveau Repository</Button>
           <Button size={'Medium'} onClick={handleExistingRepository}>Repository Existant</Button>
-      </div>
+      </Sidebar>
 
       <UiApp>
         <div className={'App__Header'}>
