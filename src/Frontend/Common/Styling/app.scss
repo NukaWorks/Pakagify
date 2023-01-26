@@ -25,6 +25,10 @@
     align-items: center;
     padding: 2em;
 
+    &--Horizontal {
+      flex-direction: row;
+    }
+
     & .Button {
       width: 100%;
     }
