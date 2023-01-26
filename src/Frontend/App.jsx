@@ -6,8 +6,7 @@ import {
   DialogOverlay,
   DialogOverlayContext,
   FlexLayout,
-  Link,
-  ScrollLayout,
+  ListView,
   Spinner,
   StackLayout,
   Text,
@@ -20,6 +19,8 @@ let pakagify = null
 if (window.localStorage.getItem('gh-token')) {
   pakagify = new Pakagify(window.localStorage.getItem('gh-token'))
 }
+
+const textEllipsisStyle = { whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }
 
 function GithubDialog ({ ...props }) {
   const context = React.useContext(DialogOverlayContext)
@@ -50,7 +51,7 @@ function GithubDialog ({ ...props }) {
   return (
     <DialogOverlay name={'github-token'} {...props}>
       <FlexLayout direction={'Vertical'} spacing={15}>
-        <Text size={13}>Create a Github Token</Text>
+        <Text size={15}>Create a Github Token</Text>
         <StackLayout spacing={5}>
           <TextField onChange={parseToken} invalid={!token} ref={inputRef} type={'password'}
                      placeholder={'Github Token'}/>
@@ -71,46 +72,44 @@ function GithubDialog ({ ...props }) {
   )
 }
 
+// Needs to be separated
+function GithubRepoFinder () {
+  const [data, setData] = useState(pakagify.getRepoData())
+
+  return (
+    <ListView>
+      {[...data.entries()].map((repo, index) => (
+        <StackLayout key={index} onClick={() => console.log(repo[1].id)} direction={'Vertical'}>
+          <Text size={13} color={'#0f93e1'}>{repo[1].full_name}</Text>
+          <StackLayout spacing={10}>
+            <Text style={textEllipsisStyle}
+                  size={10}>{repo[1].description ? repo[1].description : 'No description yet.'}</Text>
+            <Text size={10} style={textEllipsisStyle} disabled>{repo[1].visibility}</Text>
+          </StackLayout>
+        </StackLayout>
+      ))}
+    </ListView>
+  )
+}
+
 function ProjectExplorerDialog ({ ...props }) {
   const context = React.useContext(DialogOverlayContext)
   const [loaded, setLoaded] = useState(false)
-  const [data, setData] = useState(null)
-
-  useEffect(() => {
-    if (context.displayed === 'repo-explorer') {
-      if (pakagify.isReady) {
-        pakagify.getRepos().then(r => {
-          console.log(r)
-          setData(r)
-          setLoaded(true)
-        })
-      }
-    }
-  }, [context.displayed])
 
   return (
     <DialogOverlay name={'repo-explorer'} {...props}>
-        {!loaded
-          ? (
-            <FlexLayout justifyContent={'Center'} alignItems={'Center'} flex={1} width={500} height={500}>
-              <Spinner size={'Small'} color={'Blue'}/>
-            </FlexLayout>
-            )
-          : (
-            <>
-              <Text size={13}>Project Explorer</Text>
-              <ScrollLayout width={500} height={500}>
-                {data.map((repo, index) => (
-                  <StackLayout key={index} onClick={() => console.log(repo.id)} direction={'Horizontal'} spacing={5}>
-                    <Link>{repo.full_name}</Link>
-                    <Text style={{ whiteSpace: 'nowrap' }}
-                          size={10}>{repo.description ? repo.description : 'No description yet.'}</Text>
-                    <Text size={10} disabled>Visibility: {repo.visibility}</Text>
-                  </StackLayout>
-                ))}
-              </ScrollLayout>
-            </>
-            )}
+      {!loaded
+        ? (
+          <FlexLayout justifyContent={'Center'} alignItems={'Center'} flex={1} width={500} height={500}>
+            <Spinner size={'Small'} color={'Blue'}/>
+          </FlexLayout>
+          )
+        : (
+          <StackLayout spacing={15} direction={'Vertical'} width={500} height={500}>
+            <Text size={15}>Project Explorer</Text>
+            <GithubRepoFinder />
+          </StackLayout>
+          )}
     </DialogOverlay>
   )
 }
