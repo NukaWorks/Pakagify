@@ -1,10 +1,16 @@
 import React from 'react'
 import ProjectView from './ProjectView'
-// TODO: IMPL a MemoryRouter, not a react contect logic for A View based ui.
+import { MemoryRouter, Route, Routes } from 'react-router'
+import RecentView from './RecentView'
+
 export default function MainWindow () {
   return (
-    <>
-      <ProjectView />
-    </>
+    <MemoryRouter initialEntries={['/project']}>
+      <Routes>
+        <Route path={'/'} element={<RecentView />} />
+        <Route path={'/project'} element={<ProjectView />} />
+      </Routes>
+
+    </MemoryRouter>
   )
 }
