@@ -1,5 +1,6 @@
 {
-  "name": "vite-project",
+  "name": "pakagify",
+  "commercial_name": "Pakagify",
   "private": true,
   "version": "0.0.0",
   "scripts": {
