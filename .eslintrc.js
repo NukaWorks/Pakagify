@@ -19,6 +19,7 @@ module.exports = {
     'react'
   ],
   rules: {
+    camelcase: 'off',
     'no-unused-vars': 'off'
   },
   settings: {
