@@ -23,7 +23,7 @@ export default function RecentView () {
   }
 
   return (
-    <AppActivity theme={'Light'}>
+    <AppActivity theme={'Light'} direction={'Horizontal'}>
       <Sidebar>
           <Button size={'Medium'} color={'Primary'} onClick={handleNewRepository}>Nouveau Repository</Button>
           <Button size={'Medium'} onClick={handleExistingRepository}>Repository Existant</Button>
