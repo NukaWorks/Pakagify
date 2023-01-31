@@ -6,6 +6,7 @@ import {
   DialogOverlay,
   DialogOverlayContext,
   FlexLayout,
+  Link,
   ListView,
   Spinner,
   StackLayout,
@@ -114,6 +115,27 @@ function ProjectExplorerDialog ({ ...props }) {
   )
 }
 
+function AboutDialog ({ ...props }) {
+  const context = React.useContext(DialogOverlayContext)
+
+  return (
+    <DialogOverlay name={'about'} {...props}>
+      <FlexLayout direction={'Vertical'} spacing={15}>
+        <Text size={16}>About</Text>
+        <StackLayout spacing={5} direction={'Vertical'}>
+          <Text size={12}>Pakagify is a simple project manager for Github.</Text>
+          <Text size={9} style={{ textAlign: 'center' }}>Made by <Link href={'https://github.com/Powerm1nt'}>@Powerm1nt</Link> with ❤️</Text>
+        </StackLayout>
+
+        <FlexLayout direction={'Horizontal'} spacing={5} justifyContent={'End'}>
+          <Button color={'Primary'} onClick={() => window.open('https://github.com/Powerm1nt', '_blank')}>Github</Button>
+          <Button onClick={() => closeDialogOverlay(context)}>Close</Button>
+        </FlexLayout>
+      </FlexLayout>
+    </DialogOverlay>
+  )
+}
+
 function RepositoryCreatorDialog ({ ...props }) {
   const context = React.useContext(DialogOverlayContext)
   const inputRef = React.useRef(null)
@@ -152,6 +174,7 @@ export default function App () {
       <GithubDialog contentRef={ref}/>
       <RepositoryCreatorDialog contentRef={ref}/>
       <ProjectExplorerDialog contentRef={ref}/>
+      <AboutDialog contentRef={ref}/>
       <MainWindow/>
     </DialogOverlayContext.Provider>
   )
