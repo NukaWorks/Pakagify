@@ -23,7 +23,7 @@ export default function Header ({ displayBackground }) {
           <Menu title={'Actions'}>
             <MenuList>
               <MenuItem onClick={() => window.localStorage.getItem('gh-token') && openDialogOverlay(context, 'repo-creator')}>New...</MenuItem>
-              <MenuItem>Open Repository...</MenuItem>
+              <MenuItem onClick={() => window.localStorage.getItem('gh-token') && openDialogOverlay(context, 'repo-explorer')}>Open Repository...</MenuItem>
               <MenuItem>Build Project</MenuItem>
               <MenuItem>Sync Repository</MenuItem>
               <MenuItem>Push Changes...</MenuItem>
