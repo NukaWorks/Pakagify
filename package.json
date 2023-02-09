@@ -10,14 +10,15 @@
   },
   "dependencies": {
     "@octokit/core": "^4.1.0",
-    "@powerws/uikit": "0.201.0",
+    "@powerws/uikit": "^0.218.0",
     "events": "^3.3.0",
     "octokit": "^2.0.10",
     "react": "^18.2.0",
     "react-detect-click-outside": "^1.1.7",
     "react-dom": "^18.2.0",
     "react-router": "^6.8.0",
-    "react-router-dom": "^6.8.0"
+    "react-router-dom": "^6.8.0",
+    "styled-components": "^5.3.6"
   },
   "devDependencies": {
     "@types/react": "^18.0.26",

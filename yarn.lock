@@ -561,14 +561,14 @@
     "@octokit/webhooks-types" "6.7.0"
     aggregate-error "^3.1.0"
 
-"@powerws/uikit@0.201.0":
-  version "0.201.0"
-  resolved "https://registry.yarnpkg.com/@powerws/uikit/-/uikit-0.201.0.tgz#6d5054d049e2f6ac16ff7d469d04225ac2c01925"
-  integrity sha512-0a+URxxq/ejyIRa/h3tyIoKCPOqhU8m9CFDEh+PaDuSbpUvu/KLZIlhcfJE/JsqgfPlY880wRKyEEmOu01+S6g==
+"@powerws/uikit@^0.218.0":
+  version "0.218.0"
+  resolved "https://registry.yarnpkg.com/@powerws/uikit/-/uikit-0.218.0.tgz#c8072b471490f6bbef45e498b91bda54ca75e373"
+  integrity sha512-QoeZAJr2nVr9+n5bCEKNTUglG7J4J0m24Pu+OgxSfna2GlEgyjGUsmyw7djy05PPQdrCwZC7EaV/vlV8gZpEHw==
   dependencies:
-    react "^18.2.0"
+    react "^18.x"
     react-detect-click-outside "^1.1.7"
-    react-dom "^18.2.0"
+    react-dom "^18.x"
     styled-components "^5.3.6"
 
 "@remix-run/router@1.3.1":
@@ -2140,7 +2140,7 @@ react-detect-click-outside@^1.1.7:
   resolved "https://registry.yarnpkg.com/react-detect-click-outside/-/react-detect-click-outside-1.1.7.tgz#8dd5766544475ab0d55084b3e2a35165e9a47854"
   integrity sha512-dMrBZD7JW0Eh/uYNmMLTNwFj6afGYxAnc80fDSGJdjXjxJddH8ZazyMg2emyb8CAx9Hilr+r1fY+tm7O7m9eJg==
 
-react-dom@^18.2.0:
+react-dom@^18.2.0, react-dom@^18.x:
   version "18.2.0"
   resolved "https://registry.yarnpkg.com/react-dom/-/react-dom-18.2.0.tgz#22aaf38708db2674ed9ada224ca4aa708d821e3d"
   integrity sha512-6IMTriUmvsjHUjNtEDudZfuDQUoWXVxKHhlEGSk81n4YFS+r/Kl99wXiwlVXtPBtJenozv2P+hxDsw9eA7Xo6g==
@@ -2168,7 +2168,7 @@ react-router@6.8.0, react-router@^6.8.0:
   dependencies:
     "@remix-run/router" "1.3.1"
 
-react@^18.2.0:
+react@^18.2.0, react@^18.x:
   version "18.2.0"
   resolved "https://registry.yarnpkg.com/react/-/react-18.2.0.tgz#555bd98592883255fa00de14f1151a917b5d77d5"
   integrity sha512-/3IjMdb2L9QbBdWiW5e3P2/npwMBaU9mHCSCUzNln0ZCYbcfTsGbTJrU/kGemdH2IWmB2ioZ+zkxtmq6g09fGQ==
