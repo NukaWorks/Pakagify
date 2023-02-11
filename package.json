@@ -2,6 +2,7 @@
   "name": "pakagify",
   "commercial_name": "Pakagify",
   "private": true,
+  "type": "module",
   "version": "0.0.0",
   "scripts": {
     "dev": "vite",
@@ -10,7 +11,9 @@
   },
   "dependencies": {
     "@octokit/core": "^4.1.0",
-    "@powerws/uikit": "^0.218.0",
+    "@powerws/uikit": "^0.220.0",
+    "chalk": "^5.2.0",
+    "commander": "^10.0.0",
     "events": "^3.3.0",
     "octokit": "^2.0.10",
     "react": "^18.2.0",

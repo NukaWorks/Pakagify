@@ -561,11 +561,13 @@
     "@octokit/webhooks-types" "6.7.0"
     aggregate-error "^3.1.0"
 
-"@powerws/uikit@^0.218.0":
-  version "0.218.0"
-  resolved "https://registry.yarnpkg.com/@powerws/uikit/-/uikit-0.218.0.tgz#c8072b471490f6bbef45e498b91bda54ca75e373"
-  integrity sha512-QoeZAJr2nVr9+n5bCEKNTUglG7J4J0m24Pu+OgxSfna2GlEgyjGUsmyw7djy05PPQdrCwZC7EaV/vlV8gZpEHw==
+"@powerws/uikit@^0.220.0":
+  version "0.220.0"
+  resolved "https://registry.yarnpkg.com/@powerws/uikit/-/uikit-0.220.0.tgz#d6f1de2863a0130f5ed2d5cf8e41c54cc906d193"
+  integrity sha512-4pCq0qsIZ5b2KTW8ASiwgtPXp+pjIx4B/Pu0t5t7TsKqXASYRL+tuysw+oA6hhpjV6QTmOHQDB4k2aNdHSXL+A==
   dependencies:
+    "@types/lodash" "^4.14.191"
+    lodash-es "^4.17.21"
     react "^18.x"
     react-detect-click-outside "^1.1.7"
     react-dom "^18.x"
@@ -689,6 +691,11 @@
   integrity sha512-272FMnFGzAVMGtu9tkr29hRL6bZj4Zs1KZNeHLnKqAvp06tAIcarTMwOh8/8bz4FmKRcMxZhZNeUAQsNLoiPhg==
   dependencies:
     "@types/node" "*"
+
+"@types/lodash@^4.14.191":
+  version "4.14.191"
+  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.191.tgz#09511e7f7cba275acd8b419ddac8da9a6a79e2fa"
+  integrity sha512-BdZ5BCCvho3EIXw6wUCXHe7rS53AIDPLE+JzwgT+OsJk53oBfbSmZZ7CX4VaRoN78N+TJpFi9QPlfIVNmJYWxQ==
 
 "@types/lru-cache@^5.1.0":
   version "5.1.1"
@@ -938,6 +945,11 @@ chalk@^4.0.0:
     ansi-styles "^4.1.0"
     supports-color "^7.1.0"
 
+chalk@^5.2.0:
+  version "5.2.0"
+  resolved "https://registry.yarnpkg.com/chalk/-/chalk-5.2.0.tgz#249623b7d66869c673699fb66d65723e54dfcfb3"
+  integrity sha512-ree3Gqw/nazQAPuJJEy+avdl7QfZMcUvmHIKgEZkGL+xOBzRvup5Hxo6LHuMceSxOabuJLJm5Yp/92R9eMmMvA==
+
 "chokidar@>=3.0.0 <4.0.0":
   version "3.5.3"
   resolved "https://registry.yarnpkg.com/chokidar/-/chokidar-3.5.3.tgz#1cf37c8707b932bd1af1ae22c0432e2acd1903bd"
@@ -981,6 +993,11 @@ color-name@~1.1.4:
   version "1.1.4"
   resolved "https://registry.yarnpkg.com/color-name/-/color-name-1.1.4.tgz#c2a09a87acbde69543de6f63fa3995c826c536a2"
   integrity sha512-dOy+3AuW3a2wNbZHIuMZpTcgjGuLU/uBL/ubcZF9OXbDo8ff4O8yVp5Bf0efS8uEoYo5q4Fx7dY9OgQGXgAsQA==
+
+commander@^10.0.0:
+  version "10.0.0"
+  resolved "https://registry.yarnpkg.com/commander/-/commander-10.0.0.tgz#71797971162cd3cf65f0b9d24eb28f8d303acdf1"
+  integrity sha512-zS5PnTI22FIRM6ylNW8G4Ap0IEOyk62fhLSD0+uHRT9McRCLGpkVNvao4bjimpK/GShynyQkFFxHhwMcETmduA==
 
 concat-map@0.0.1:
   version "0.0.1"
@@ -1844,6 +1861,11 @@ locate-path@^6.0.0:
   integrity sha512-iPZK6eYjbxRu3uB4/WZ3EsEIMJFMqAoopl3R+zuq0UjcAm/MO6KCweDgPfP3elTztoKP3KtnVHxTn2NHBSDVUw==
   dependencies:
     p-locate "^5.0.0"
+
+lodash-es@^4.17.21:
+  version "4.17.21"
+  resolved "https://registry.yarnpkg.com/lodash-es/-/lodash-es-4.17.21.tgz#43e626c46e6591b7750beb2b50117390c609e3ee"
+  integrity sha512-mKnC+QJ9pWVzv+C4/U3rRsHapFfHvQFoFB92e52xeyGMcX6/OlIl78je1u8vePzYZSkkogMPJ2yjxxsb89cxyw==
 
 lodash.includes@^4.3.0:
   version "4.3.0"
