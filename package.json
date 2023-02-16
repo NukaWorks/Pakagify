@@ -5,7 +5,7 @@
   "version": "0.0.0",
   "scripts": {
     "dev": "vite",
-    "dev:cli": "rm -rf build && mkdir build && esbuild --bundle src/Backend/Pakagify.cli.js --platform=node --outfile=build/cli.js && node build/cli.js",
+    "dev:cli": "rm -rf build && mkdir build && esbuild --bundle src/Backend/Pakagify.cli.js --platform=node --outfile=build/pcli.js && node build/pcli.js",
     "build": "vite build",
     "preview": "vite preview"
   },
