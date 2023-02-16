@@ -1,9 +1,5 @@
 import { program } from 'commander'
-import { createRequire } from 'node:module'
-
-// Import the package.json file to get the version number by using the createRequire function
-const require = createRequire(import.meta.url)
-const { version } = require('../../package.json')
+import { version } from '../../package.json'
 
 function mainCommand (argv) {
   program
