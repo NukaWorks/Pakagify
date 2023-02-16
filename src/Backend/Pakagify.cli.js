@@ -21,10 +21,13 @@ function mainCommand (argv) {
       configProvider.save()
     })
 
-  program.command('package <name> <category>').description('Make a new story.')
-    .action((name, category) => {
-      // makeStory(name, category)
-    })
+  program.command('add').description('Add a new repository, package ...')
+    .addCommand(new program.Command('repository <name>').description('Add a new repository.'))
+    .addCommand(new program.Command('package <name>').description('Add a new package.'))
+
+  program.command('delete').description('Delete a repository, package ...')
+    .addCommand(new program.Command('repository <name>').description('Delete a repository.'))
+    .addCommand(new program.Command('package <name>').description('Delete a package.'))
 
   program.parse(argv)
 }
