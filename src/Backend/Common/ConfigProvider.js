@@ -17,7 +17,8 @@ class ConfigProvider {
   }
 
   has (key) {
-    return this._config.hasOwn(key, key)
+    // eslint-disable-next-line no-prototype-builtins
+    return this._config.hasOwnProperty(key)
   }
 
   remove (key) {
