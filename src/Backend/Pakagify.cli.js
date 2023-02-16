@@ -1,6 +1,5 @@
 import { program } from 'commander'
 import { version } from '../../package.json'
-import process from 'child_process'
 import { ConfigProvider } from './Common/ConfigProvider'
 
 const configProvider = new ConfigProvider()
@@ -13,8 +12,10 @@ function mainCommand (argv) {
 
   program.command('auth <token>').description('Make a new component with story.')
     .action(token => {
-      // process.env.PAKAGIFY_TOKEN = token
-      // console.log(process.env.PAKAGIFY_TOKEN)
+      if (!token) {
+        console.error('Token is required.')
+        process.exit(1)
+      }
 
       configProvider.set('token', Buffer.from(token).toString('base64'))
       configProvider.save()
