@@ -26,8 +26,8 @@ export class Pakagify {
     })
   }
 
-  async getUser () {
-    if (!this.user) {
+  async getUser (refresh) {
+    if (!this.user || refresh) {
       await this.octokit.rest.users.getAuthenticated().then(res => {
         this.user = res.data
       })
