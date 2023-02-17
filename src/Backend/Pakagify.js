@@ -13,13 +13,24 @@ export class Pakagify {
     this.#octokit = new Octokit({ auth: token })
   }
 
-  async createRepo (user, name, isPrivate) {
+  async createRepo (user, repoName, isPrivate) {
     return this.getUser().then(async res => {
       if (user === res.login || user === null) {
-        return await this.#octokit.rest.repos.createForAuthenticatedUser({ name, private: isPrivate })
+        return await this.#octokit.rest.repos.createForAuthenticatedUser({ name: repoName, private: isPrivate })
       } else {
-        console.log(user, name, isPrivate)
-        return await this.#octokit.rest.repos.createInOrg({ org: user, name, private: isPrivate })
+        console.log(user, repoName, isPrivate)
+        return await this.#octokit.rest.repos.createInOrg({ org: user, name: repoName, private: isPrivate })
+      }
+    })
+  }
+
+  async deleteRepo (user, repoName, isPrivate) {
+    return this.getUser().then(async res => {
+      if (user === res.login || user === null) {
+        return await this.#octokit.rest.repos.delete({ owner: res.login, repo: repoName })
+      } else {
+        console.log(user, repoName, isPrivate)
+        return await this.#octokit.rest.repos.createInOrg({ org: user, name: repoName, private: isPrivate })
       }
     })
   }

@@ -65,15 +65,42 @@ function mainCommand (argv) {
       }
     })
 
+  program.command('delete <type> <name>').description('Delete a repository, package ...')
+    .action((type, name) => {
+      const userAndName = name.split('/')
+
+      if (!configProvider.has('token')) {
+        console.error('You need to authenticate first.')
+        process.exit(1)
+      }
+
+      if (type === 'repository') {
+        // Check if no org user specified
+        if (userAndName.length <= 1) {
+          userAndName[0] = null
+          userAndName[1] = name
+        }
+
+        processData(decodeToken(configProvider.get('token'))).deleteRepo(userAndName[0], userAndName[1], true).then(res => {
+          console.log(`Successfully deleted repository ${name} !`)
+          console.log(res)
+        }).catch(err => {
+          console.error(err)
+          process.exit(1)
+        })
+      } else if (type === 'package') {
+        // TODO
+      } else {
+        console.error('Invalid type.')
+        process.exit(1)
+      }
+    })
+
   program.command('list [command]').description('List a repository, package ...') // TODO Not working yet
     .action(() => {
       program.addCommand(new program.Command('repository <name>').description('List a repository.'))
         .action(name => {
-          processData(decodeToken(configProvider.get('token'))).getRepoData().forEach(repo => {
-            if (repo.name === name) {
-              console.log(repo)
-            }
-          })
+          // processData(decodeToken(configProvider.get('token'))).getUserRepos()
         })
     })
 
