@@ -1,11 +1,10 @@
 import { Octokit } from 'octokit'
+import { v4 as uuidv4 } from 'uuid'
 
 export class Pakagify {
   #ghToken = ''
   #user = null
   #reposData = new Map()
-  // #orgsData = new Map()
-  // isRepoBuilt = false
   #octokit = null
 
   constructor (token) {
@@ -13,25 +12,32 @@ export class Pakagify {
     this.#octokit = new Octokit({ auth: token })
   }
 
-  async createRepo (user, repoName, isPrivate) {
+  async createRelease (user, repoName) {
     return this.getUser().then(async res => {
-      if (user === res.login || user === null) {
-        return await this.#octokit.rest.repos.createForAuthenticatedUser({ name: repoName, private: isPrivate })
-      } else {
-        console.log(user, repoName, isPrivate)
-        return await this.#octokit.rest.repos.createInOrg({ org: user, name: repoName, private: isPrivate })
-      }
+      const uuid = uuidv4().split('-')[1] // Generate & Get the first part of the uuid
+      return await this.#octokit.rest.repos.createRelease({ owner: res.login, repo: repoName, tag_name: uuid }).then(rel => {
+        return rel.data
+      })
     })
   }
 
-  async deleteRepo (user, repoName, isPrivate) {
+  async deleteRelease (user, repoName) {
     return this.getUser().then(async res => {
-      if (user === res.login || user === null) {
-        return await this.#octokit.rest.repos.delete({ owner: res.login, repo: repoName })
-      } else {
-        console.log(user, repoName, isPrivate)
-        return await this.#octokit.rest.repos.createInOrg({ org: user, name: repoName, private: isPrivate })
-      }
+      return this.#octokit.rest.repos.getLatestRelease({ owner: res.login, repo: repoName }).then(async rel => {
+        return await this.#octokit.rest.repos.deleteRelease({
+          owner: res.login,
+          repo: repoName,
+          release_id: rel.data.id
+        })
+      })
+    })
+  }
+
+  async getLatestRelease (user, repoName) {
+    return this.getUser().then(async res => {
+      return await this.#octokit.rest.repos.getLatestRelease({ owner: res.login, repo: repoName }).then(rel => {
+        return rel.data
+      })
     })
   }
 
@@ -58,32 +64,6 @@ export class Pakagify {
   }
 
   async getOrgs () {
-    // return await (await (fetch(`${this.baseUrl}/users/${this.user.login}/orgs`, this.fetchParams))).json().then(async orgs => {
-    //   orgs.forEach(async org => {
-    //     if (!this.#orgsData.has(org.id)) this.#orgsData.set(org.id, org)
-    //   })
-    //   return this.#orgsData
-    // })
-
     return await this.#octokit.rest.orgs.listForAuthenticatedUser()
   }
 }
-//   async buildRepoIndex () {
-//     this.getOrgs().then(orgs => {
-//       return orgs.forEach(async org => {
-//         await this.getOrgRepos(org.login).then(async res => {
-//           await res.forEach(repo => {
-//             if (!this.#reposData.has(repo.id)) this.#reposData.set(repo.id, repo)
-//           })
-//           // return this.#reposData
-//         })
-//       })
-//     })
-//
-//     await this.getUserRepos().then(res => {
-//       res.forEach(repo => {
-//         if (!this.#reposData.has(repo.id)) this.#reposData.set(repo.id, repo)
-//       })
-//     })
-//   }
-// }
