@@ -5,9 +5,9 @@ export class Pakagify {
   baseUrl = 'https://api.github.com'
   ghToken = ''
   fetchParams = {}
-  user = {}
+  user = null
   #reposData = new Map()
-  orgsData = new Map()
+  #orgsData = new Map()
   isRepoBuilt = false
 
   constructor (token) {
@@ -17,17 +17,22 @@ export class Pakagify {
 
   async createRepo (user, name, isPrivate) {
     return this.getUser().then(async res => {
-      console.log(user === res.login, user, res)
-      if (user === res.login) {
+      if (user === res.login || user === null) {
         return await this.octokit.rest.repos.createForAuthenticatedUser({ name, private: isPrivate })
       } else {
+        console.log(user, name, isPrivate)
         return await this.octokit.rest.repos.createInOrg({ org: user, name, private: isPrivate })
       }
     })
   }
 
   async getUser () {
-    if (!this.user) return await this.octokit.rest.users.getAuthenticated()
+    if (!this.user) {
+      await this.octokit.rest.users.getAuthenticated().then(res => {
+        this.user = res.data
+      })
+    }
+
     return this.user
   }
 
@@ -46,9 +51,9 @@ export class Pakagify {
   async getOrgs () {
     return await (await (fetch(`${this.baseUrl}/users/${this.user.login}/orgs`, this.fetchParams))).json().then(async orgs => {
       orgs.forEach(async org => {
-        if (!this.orgsData.has(org.id)) this.orgsData.set(org.id, org)
+        if (!this.#orgsData.has(org.id)) this.#orgsData.set(org.id, org)
       })
-      return this.orgsData
+      return this.#orgsData
     })
   }
 
