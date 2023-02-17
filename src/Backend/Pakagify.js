@@ -1,5 +1,6 @@
 import { EventEmitter } from 'events'
 import fetch from 'node-fetch'
+import { Octokit } from 'octokit'
 
 export class Pakagify extends EventEmitter {
   baseUrl = 'https://api.github.com'
@@ -21,6 +22,8 @@ export class Pakagify extends EventEmitter {
       }
     }
 
+    this.octokit = new Octokit({ auth: token })
+
     this.getUser().then(res => {
       this.user = res
       this.isReady = true
@@ -31,8 +34,12 @@ export class Pakagify extends EventEmitter {
     })
   }
 
+  async createRepo (user, name, isPrivate) {
+    return await this.octokit.rest.repos.createForAuthenticatedUser({ name, private: isPrivate })
+  }
+
   async getUser () {
-    return (await fetch(`${this.baseUrl}/user`, this.fetchParams)).json()
+    return await this.octokit.rest.users.getAuthenticated()
   }
 
   async getUserRepos () {
