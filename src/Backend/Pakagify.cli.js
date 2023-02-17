@@ -50,9 +50,9 @@ function mainCommand (argv) {
           userAndName[1] = name
         }
 
-        processData(decodeToken(configProvider.get('token'))).createRepo(userAndName[0], userAndName[1], true).then(res => {
-          console.log(`Successfully created repository ${res.name} !`)
-          console.log(res)
+        processData(decodeToken(configProvider.get('token'))).createRelease(userAndName[0], userAndName[1], true).then(res => {
+          console.log(`Successfully created repository ${name} on ${res.tag_name} !`)
+          console.debug(res)
         }).catch(err => {
           console.error(err)
           process.exit(1)
@@ -77,12 +77,16 @@ function mainCommand (argv) {
       if (type === 'repository') {
         // Check if no org user specified
         if (userAndName.length <= 1) {
-          userAndName[0] = null
+          userAndName[0] = processData(decodeToken(configProvider.get('token'))).getUser().login
           userAndName[1] = name
         }
 
-        processData(decodeToken(configProvider.get('token'))).deleteRepo(userAndName[0], userAndName[1], true).then(res => {
-          console.log(`Successfully deleted repository ${name} !`)
+        let latestReleaseTag = processData(decodeToken(configProvider.get('token'))).getLatestRelease(userAndName[0], userAndName[1]).then(rel => {
+          latestReleaseTag = rel.tag_name
+        })
+
+        processData(decodeToken(configProvider.get('token'))).deleteRelease(userAndName[0], userAndName[1], true).then(res => {
+          console.log(`Successfully deleted repository ${name} on ${latestReleaseTag} !`)
           console.log(res)
         }).catch(err => {
           console.error(err)
