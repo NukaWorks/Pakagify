@@ -2,10 +2,12 @@ import fs from 'fs'
 import * as path from 'path'
 
 const CONFIG_DIR = path.join(process.env.HOME, '.config/pakagify/')
+const CONFIG_FILE = path.join(CONFIG_DIR, 'pcli.json')
 
 class ConfigProvider {
   constructor () {
     this._config = {}
+    this.retrieve()
   }
 
   set (key, value) {
@@ -31,9 +33,14 @@ class ConfigProvider {
 
   save () {
     // Save the json config
-    const configFile = path.join(CONFIG_DIR, 'pcli.json')
     if (!fs.existsSync(CONFIG_DIR)) fs.mkdirSync(CONFIG_DIR, { recursive: true })
-    fs.writeFileSync(configFile, JSON.stringify(this._config, null, 2)) // TODO Impl locks
+    fs.writeFileSync(CONFIG_FILE, JSON.stringify(this._config, null, 2)) // TODO Impl locks
+  }
+
+  retrieve () {
+    // Retrieve the json config
+    if (!fs.existsSync(CONFIG_FILE)) throw new Error('Config file not found.')
+    this._config = JSON.parse(fs.readFileSync(CONFIG_FILE, 'utf8'))
   }
 }
 export { ConfigProvider }
