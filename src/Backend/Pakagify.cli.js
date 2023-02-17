@@ -5,7 +5,10 @@ import { Pakagify } from './Pakagify'
 
 const configProvider = new ConfigProvider()
 
-let pkInstance = null
+function processData (token) {
+  if (!processData.instance) processData.instance = new Pakagify(token)
+  return processData.instance
+}
 
 function mainCommand (argv) {
   program
@@ -21,8 +24,8 @@ function mainCommand (argv) {
       }
 
       configProvider.set('token', Buffer.from(token).toString('base64'))
-      pkInstance = new Pakagify(Buffer.from(token).toString('utf8'))
-      pkInstance.getUser().then(user => {
+
+      processData(decodeToken(configProvider.get('token'))).getUser().then(user => {
         configProvider.save()
         console.log(`Successfully authenticated as ${user.login} !`)
       }).catch(err => {
@@ -31,19 +34,46 @@ function mainCommand (argv) {
       })
     })
 
-  program.command('add [command]').description('Add a new repository, package ...')
-    .addCommand(new program.Command('repository <name>').description('Add a new repository.'))
-    .addCommand(new program.Command('package <name>').description('Add a new package.'))
+  program.command('create <type> <name>').description('Create a repository, package ...')
+    .action((type, name) => {
+      if (!configProvider.has('token')) {
+        console.error('You need to authenticate first.')
+        process.exit(1)
+      }
 
-  program.command('delete [command]').description('Delete a repository, package ...')
-    .addCommand(new program.Command('repository <name>').description('Delete a repository.'))
-    .addCommand(new program.Command('package <name>').description('Delete a package.'))
+      if (type === 'repository') {
+        processData(decodeToken(configProvider.get('token'))).createRepo('powerm1nt', 'Hello', true).then(res => {
+          console.log(`Successfully created repository ${res.name} !`)
+          console.log(res)
+        }).catch(err => {
+          console.error(err)
+          process.exit(1)
+        })
+      } else if (type === 'package') {
+        // TODO
+      } else {
+        console.error('Invalid type.')
+        process.exit(1)
+      }
+    })
 
-  program.command('list [command]').description('List a repository, package ...')
-    .addCommand(new program.Command('repository <name>').description('List a repository.'))
-    .addCommand(new program.Command('package <name>').description('List a package.'))
+  program.command('list [command]').description('List a repository, package ...') // TODO Not working yet
+    .action(() => {
+      program.addCommand(new program.Command('repository <name>').description('List a repository.'))
+        .action(name => {
+          processData(decodeToken(configProvider.get('token'))).getRepoData().forEach(repo => {
+            if (repo.name === name) {
+              console.log(repo)
+            }
+          })
+        })
+    })
 
   program.parse(argv)
+}
+
+function decodeToken (token) {
+  return Buffer.from(token, 'base64').toString('utf8')
 }
 
 mainCommand(process.argv)
