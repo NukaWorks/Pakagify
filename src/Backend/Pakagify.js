@@ -1,4 +1,5 @@
 import { EventEmitter } from 'events'
+import fetch from 'node-fetch'
 
 export class Pakagify extends EventEmitter {
   baseUrl = 'https://api.github.com'
@@ -20,7 +21,7 @@ export class Pakagify extends EventEmitter {
       }
     }
 
-    this.#getUser().then(res => {
+    this.getUser().then(res => {
       this.user = res
       this.isReady = true
       this.buildRepoIndex().then(() => {
@@ -30,7 +31,7 @@ export class Pakagify extends EventEmitter {
     })
   }
 
-  async #getUser () {
+  async getUser () {
     return (await fetch(`${this.baseUrl}/user`, this.fetchParams)).json()
   }
 
