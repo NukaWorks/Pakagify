@@ -36,13 +36,15 @@ function mainCommand (argv) {
 
   program.command('create <type> <name>').description('Create a repository, package ...')
     .action((type, name) => {
+      const userAndName = name.split('/')
+
       if (!configProvider.has('token')) {
         console.error('You need to authenticate first.')
         process.exit(1)
       }
 
       if (type === 'repository') {
-        processData(decodeToken(configProvider.get('token'))).createRepo('powerm1nt', 'Hello', true).then(res => {
+        processData(decodeToken(configProvider.get('token'))).createRepo(userAndName[0], userAndName[1], true).then(res => {
           console.log(`Successfully created repository ${res.name} !`)
           console.log(res)
         }).catch(err => {
