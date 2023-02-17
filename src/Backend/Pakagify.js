@@ -27,19 +27,24 @@ export class Pakagify extends EventEmitter {
     this.getUser().then(res => {
       this.user = res
       this.isReady = true
-      this.buildRepoIndex().then(() => {
-        this.isRepoBuilt = true
-        this.emit('ready')
-      })
+      // this.buildRepoIndex().then(() => {
+      //   this.isRepoBuilt = true
+      //   this.emit('ready')
+      // })
     })
   }
 
   async createRepo (user, name, isPrivate) {
-    return await this.octokit.rest.repos.createForAuthenticatedUser({ name, private: isPrivate })
+    if (user.login === await this.getUser()) {
+      return await this.octokit.rest.repos.createForAuthenticatedUser({ name, private: isPrivate })
+    } else {
+      return await this.octokit.rest.repos.createInOrg({ org: user, name, private: isPrivate })
+    }
   }
 
   async getUser () {
-    return await this.octokit.rest.users.getAuthenticated()
+    if (!this.user) return await this.octokit.rest.users.getAuthenticated()
+    return this.user
   }
 
   async getUserRepos () {
