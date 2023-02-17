@@ -44,6 +44,12 @@ function mainCommand (argv) {
       }
 
       if (type === 'repository') {
+        // Check if no org user specified
+        if (userAndName.length <= 1) {
+          userAndName[0] = null
+          userAndName[1] = name
+        }
+
         processData(decodeToken(configProvider.get('token'))).createRepo(userAndName[0], userAndName[1], true).then(res => {
           console.log(`Successfully created repository ${res.name} !`)
           console.log(res)
