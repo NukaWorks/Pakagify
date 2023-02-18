@@ -35,6 +35,14 @@ export class Pakagify {
     })
   }
 
+  async getRepositoryData (user, repoName) {
+    return this.getUser().then(async res => {
+      return this.#octokit.rest.repos.get({ owner: user || res.login, repo: repoName }).then(async ({ data }) => {
+        return data
+      })
+    })
+  }
+
   async deleteRelease (user, repoName) {
     return this.getUser().then(async res => {
       return this.#octokit.rest.repos.getLatestRelease({ owner: user || res.login, repo: repoName }).then(async rel => {
