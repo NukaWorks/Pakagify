@@ -47,9 +47,25 @@ export class Pakagify {
     })
   }
 
-  async getRepositoryData (user, repoName) {
+  async getGitRepositoryData (user, repoName) {
     return this.#octokit.rest.repos.get({ owner: user, repo: repoName }).then(async ({ data }) => {
       return data
+    })
+  }
+
+  async getPakRepositoryData (user, repoName) {
+    return this.#octokit.rest.repos.getLatestRelease({ owner: user, repo: repoName }).then(async ({ data }) => {
+      for (const asset of data.assets) {
+        if (asset.name === 'repo.json') {
+          return await this.#octokit.rest.repos.getReleaseAsset({
+            owner: user,
+            repo: repoName,
+            asset_id: asset.id
+          }).then(async (res) => {
+            return JSON.parse(res.data)
+          })
+        }
+      }
     })
   }
 
