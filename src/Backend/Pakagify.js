@@ -15,21 +15,21 @@ export class Pakagify {
   async createRelease (user, repoName) {
     return this.getUser().then(async res => {
       const uuid = uuidv4().split('-')[1] // Generate & Get the first part of the uuid
-      return await this.#octokit.rest.repos.createRelease({ owner: user || res.login, repo: repoName, tag_name: uuid }).then(rel => {
-        return rel.data
+      return await this.#octokit.rest.repos.createRelease({ owner: user || res.login, repo: repoName, tag_name: uuid }).then(({ data }) => {
+        return data
       })
     })
   }
 
-  async pushRepoData (user, repoName, fileName, data) {
+  async pushRepoData (user, repoName, fileName, fileData) {
     return this.getUser().then(async res => {
-      return this.#octokit.rest.repos.getLatestRelease({ owner: user || res.login, repo: repoName }).then(async rel => {
+      return this.#octokit.rest.repos.getLatestRelease({ owner: user || res.login, repo: repoName }).then(async ({ data }) => {
         return await this.#octokit.rest.repos.uploadReleaseAsset({
           owner: user || res.login,
           repo: repoName,
-          release_id: rel.data.id,
+          release_id: data.id,
           name: fileName,
-          data
+          data: fileData
         })
       })
     })
@@ -49,16 +49,16 @@ export class Pakagify {
 
   async getLatestRelease (user, repoName) {
     return this.getUser().then(async res => {
-      return await this.#octokit.rest.repos.getLatestRelease({ owner: user || res.login, repo: repoName }).then(rel => {
-        return rel.data
+      return await this.#octokit.rest.repos.getLatestRelease({ owner: user || res.login, repo: repoName }).then(({ data }) => {
+        return data
       })
     })
   }
 
   async getUser (refresh) {
     if (!this.#user || refresh) {
-      await this.#octokit.rest.users.getAuthenticated().then(res => {
-        this.#user = res.data
+      await this.#octokit.rest.users.getAuthenticated().then(({ data }) => {
+        this.#user = data
       })
     }
 
