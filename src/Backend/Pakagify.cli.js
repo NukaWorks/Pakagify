@@ -11,6 +11,10 @@ function processData (token) {
   return processData.instance
 }
 
+function decodeToken (token) {
+  return Buffer.from(token, 'base64').toString('utf8')
+}
+
 function mainCommand (argv) {
   program
     .name('pcli')
@@ -114,10 +118,6 @@ function mainCommand (argv) {
     })
 
   program.parse(argv)
-}
-
-function decodeToken (token) {
-  return Buffer.from(token, 'base64').toString('utf8')
 }
 
 mainCommand(process.argv)
