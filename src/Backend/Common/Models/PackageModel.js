@@ -6,6 +6,7 @@ export const PackageModel = {
   url: '',
   arch: '',
   platform: '',
+  restart_required: false,
   last_updated: '',
   created_at: '',
   scripts: {
