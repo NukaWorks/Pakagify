@@ -55,13 +55,26 @@ function mainCommand (argv) {
           userAndName[1] = name
         }
 
-        processData(decodeToken(configProvider.get('token'))).createRelease(userAndName[0], userAndName[1], true).then(res => {
-          processData(decodeToken(configProvider.get('token'))).pushRepoData(userAndName[0], userAndName[1], 'repo.json', JSON.stringify(RepoModel)).then(push => {
-            console.log(`Successfully created repository ${name} on ${res.tag_name} !`)
-            console.debug(push)
+        processData(decodeToken(configProvider.get('token'))).getRepositoryData(userAndName[0], userAndName[1]).then(repo => {
+          const repoModel = RepoModel
+          repoModel.name = repo.name
+          repoModel.description = repo.description
+          repoModel.author = repo.owner.login
+          repoModel.url = repo.html_url
+          repoModel.last_updated = repo.updated_at
+          repoModel.created_at = repo.created_at
+          repoModel.license = repo.license
+
+          processData(decodeToken(configProvider.get('token'))).createRelease(userAndName[0], userAndName[1], true).then(res => {
+            processData(decodeToken(configProvider.get('token'))).pushRepoData(userAndName[0], userAndName[1], 'repo.json', JSON.stringify(RepoModel)).then(push => {
+              console.log(`Successfully created repository ${name} on ${res.tag_name} !`)
+              console.debug(push)
+            })
+
+            console.debug(res)
           })
 
-          console.debug(res)
+          console.debug(repo)
         }).catch(err => {
           console.error(err)
           process.exit(1)
