@@ -216,16 +216,6 @@ function mainCommand (argv) {
         })
     })
 
-  program.command('list [command]')
-    .description('List a repository, package ...') // TODO Not working yet
-    .action(() => {
-      program.addCommand(new program.Command('repository <name>')
-        .description('List a repository.'))
-        .action(name => {
-          // processData(decodeToken(configProvider.get('token'))).getUserRepos()
-        })
-    })
-
   program.parse(argv)
 }
 
