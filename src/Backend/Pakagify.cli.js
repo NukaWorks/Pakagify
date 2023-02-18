@@ -21,7 +21,8 @@ function mainCommand (argv) {
     .description('Pakagify CLI')
     .version(version)
 
-  program.command('auth <token>').description('Authenticate with Github Token.')
+  program.command('auth <token>')
+    .description('Authenticate with Github Token.')
     .action(token => {
       if (!token) {
         console.error('Token is required.')
@@ -30,38 +31,45 @@ function mainCommand (argv) {
 
       configProvider.set('token', Buffer.from(token).toString('base64'))
 
-      processData(decodeToken(configProvider.get('token'))).getUser().then(user => {
-        configProvider.save()
-        console.log(`Successfully authenticated as ${user.login} !`)
-      }).catch(err => {
-        console.error(err)
-        process.exit(1)
-      })
+      processData(decodeToken(configProvider.get('token')))
+        .getUser()
+        .then(user => {
+          configProvider.save()
+          console.log(`Successfully authenticated as ${user.login} !`)
+        }).catch(err => {
+          console.error(err)
+          process.exit(1)
+        })
     })
 
-  program.command('logout').description('Logout from Pakagify CLI.')
+  program.command('logout')
+    .description('Logout from Pakagify CLI.')
     .action(() => {
       configProvider.remove('token')
       configProvider.save()
       console.log('Successfully logged out.')
     })
 
-  program.command('whoami').description('Get the current authenticated user.')
+  program.command('whoami')
+    .description('Get the current authenticated user.')
     .action(() => {
       if (!configProvider.has('token')) {
         console.error('You need to authenticate first.')
         process.exit(1)
       }
 
-      processData(decodeToken(configProvider.get('token'))).getUser().then(user => {
-        console.log(`You are currently authenticated as ${user.login} !`)
-      }).catch(err => {
-        console.error(err)
-        process.exit(1)
-      })
+      processData(decodeToken(configProvider.get('token')))
+        .getUser()
+        .then(user => {
+          console.log(`You are currently authenticated as ${user.login} !`)
+        }).catch(err => {
+          console.error(err)
+          process.exit(1)
+        })
     })
 
-  program.command('info <type> <name>').description('Test Pakagify Data')
+  program.command('info <type> <name>')
+    .description('Test Pakagify Data')
     .action((type, name) => {
       const userAndName = name.split('/')
 
@@ -71,7 +79,8 @@ function mainCommand (argv) {
       }
 
       if (type === 'repository') {
-        processData(decodeToken(configProvider.get('token'))).getUser()
+        processData(decodeToken(configProvider.get('token')))
+          .getUser()
           .then(user => {
           // Check if no org user specified
             if (userAndName.length <= 1) {
@@ -79,7 +88,8 @@ function mainCommand (argv) {
               userAndName[1] = name
             }
 
-            processData(decodeToken(configProvider.get('token'))).getPakRepositoryData(userAndName[0], userAndName[1])
+            processData(decodeToken(configProvider.get('token')))
+              .getPakRepositoryData(userAndName[0], userAndName[1])
               .then(res => {
                 console.log(res)
               }).catch(err => {
@@ -90,7 +100,8 @@ function mainCommand (argv) {
       }
     })
 
-  program.command('create <type> <name>').description('Create a repository, package ...')
+  program.command('create <type> <name>')
+    .description('Create a repository, package ...')
     .action((type, name) => {
       const userAndName = name.split('/')
 
@@ -99,7 +110,8 @@ function mainCommand (argv) {
         process.exit(1)
       }
 
-      processData(decodeToken(configProvider.get('token'))).getUser()
+      processData(decodeToken(configProvider.get('token')))
+        .getUser()
         .then(user => {
           if (type === 'repository') {
             // Check if no org user specified
@@ -158,7 +170,8 @@ function mainCommand (argv) {
         console.error('You need to authenticate first.')
         process.exit(1)
       }
-      processData(decodeToken(configProvider.get('token'))).getUser()
+      processData(decodeToken(configProvider.get('token')))
+        .getUser()
         .then(user => {
           if (type === 'repository') {
             // Check if no org user specified
