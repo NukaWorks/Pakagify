@@ -13,53 +13,59 @@ export class Pakagify {
   }
 
   async createRelease (user, repoName) {
-    return this.getUser().then(async res => {
-      const uuid = uuidv4().split('-')[1] // Generate & Get the first part of the uuid
-      return await this.#octokit.rest.repos.createRelease({ owner: user || res.login, repo: repoName, tag_name: uuid }).then(({ data }) => {
-        return data
-      })
+    const uuid = uuidv4().split('-')[1] // Generate & Get the first part of the uuid
+    return await this.#octokit.rest.repos.createRelease({ owner: user, repo: repoName, tag_name: uuid }).then(({ data }) => {
+      return data
     })
   }
 
   async pushRepoData (user, repoName, fileName, fileData) {
-    return this.getUser().then(async res => {
-      return this.#octokit.rest.repos.getLatestRelease({ owner: user || res.login, repo: repoName }).then(async ({ data }) => {
-        return await this.#octokit.rest.repos.uploadReleaseAsset({
-          owner: user || res.login,
-          repo: repoName,
-          release_id: data.id,
-          name: fileName,
-          data: fileData
-        })
+    return this.#octokit.rest.repos.getLatestRelease({ owner: user, repo: repoName }).then(async ({ data }) => {
+      return await this.#octokit.rest.repos.uploadReleaseAsset({
+        owner: user,
+        repo: repoName,
+        release_id: data.id,
+        name: fileName,
+        data: fileData
       })
+    })
+  }
+
+  async deleteAsset (user, repoName, assetName) {
+    return this.#octokit.rest.repos.get({ owner: user, repo: repoName }).then(async ({ data }) => {
+      for (const asset of data.assets) {
+        if (asset.name === assetName) {
+          await this.#octokit.rest.repos.getReleaseAsset({
+            owner: user,
+            repo: repoName,
+            asset_id: asset.id
+          }).then(async (res) => {
+            return res
+          })
+        }
+      }
     })
   }
 
   async getRepositoryData (user, repoName) {
-    return this.getUser().then(async res => {
-      return this.#octokit.rest.repos.get({ owner: user || res.login, repo: repoName }).then(async ({ data }) => {
-        return data
-      })
+    return this.#octokit.rest.repos.get({ owner: user, repo: repoName }).then(async ({ data }) => {
+      return data
     })
   }
 
   async deleteRelease (user, repoName) {
-    return this.getUser().then(async res => {
-      return this.#octokit.rest.repos.getLatestRelease({ owner: user || res.login, repo: repoName }).then(async rel => {
-        return await this.#octokit.rest.repos.deleteRelease({
-          owner: user || res.login,
-          repo: repoName,
-          release_id: rel.data.id
-        })
+    return this.#octokit.rest.repos.getLatestRelease({ owner: user, repo: repoName }).then(async rel => {
+      return await this.#octokit.rest.repos.deleteRelease({
+        owner: user,
+        repo: repoName,
+        release_id: rel.data.id
       })
     })
   }
 
   async getLatestRelease (user, repoName) {
-    return this.getUser().then(async res => {
-      return await this.#octokit.rest.repos.getLatestRelease({ owner: user || res.login, repo: repoName }).then(({ data }) => {
-        return data
-      })
+    return await this.#octokit.rest.repos.getLatestRelease({ owner: user, repo: repoName }).then(({ data }) => {
+      return data
     })
   }
 
