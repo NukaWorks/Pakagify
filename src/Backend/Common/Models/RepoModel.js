@@ -6,5 +6,6 @@ export const RepoModel = {
   url: '',
   last_updated: '',
   created_at: '',
+  license: '',
   packages: []
 }
