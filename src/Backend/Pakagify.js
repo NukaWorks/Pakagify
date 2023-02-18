@@ -1,5 +1,6 @@
 import { Octokit } from 'octokit'
 import { v4 as uuidv4 } from 'uuid'
+import fetch from 'node-fetch'
 
 export class Pakagify {
   #ghToken = ''
@@ -57,13 +58,9 @@ export class Pakagify {
     return this.#octokit.rest.repos.getLatestRelease({ owner: user, repo: repoName }).then(async ({ data }) => {
       for (const asset of data.assets) {
         if (asset.name === 'repo.json') {
-          return await this.#octokit.rest.repos.getReleaseAsset({
-            owner: user,
-            repo: repoName,
-            asset_id: asset.id
-          }).then(async (res) => {
-            return JSON.parse(res.data)
-          })
+          return await fetch(`https://api.github.com/repos/${user}/${repoName}/releases/assets/${asset.id}`, { // Get the asset data
+            headers: { Authorization: 'Bearer ' + this.#ghToken, Accept: 'application/octet-stream' }
+          }).then(res => res.json())
         }
       }
     })
