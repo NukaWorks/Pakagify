@@ -39,6 +39,51 @@ function mainCommand (argv) {
       })
     })
 
+  program.command('logout').description('Logout from Pakagify CLI.')
+    .action(() => {
+      configProvider.remove('token')
+      configProvider.save()
+      console.log('Successfully logged out.')
+    })
+
+  program.command('whoami').description('Get the current authenticated user.')
+    .action(() => {
+      if (!configProvider.has('token')) {
+        console.error('You need to authenticate first.')
+        process.exit(1)
+      }
+
+      processData(decodeToken(configProvider.get('token'))).getUser().then(user => {
+        console.log(`You are currently authenticated as ${user.login} !`)
+      }).catch(err => {
+        console.error(err)
+        process.exit(1)
+      })
+    })
+
+  program.command('testPakData <name>').description('Test Pakagify Data')
+    .action(name => {
+      const userAndName = name.split('/')
+
+      if (!configProvider.has('token')) {
+        console.error('You need to authenticate first.')
+        process.exit(1)
+      }
+
+      // Check if no org user specified
+      if (userAndName.length <= 1) {
+        userAndName[0] = processData(decodeToken(configProvider.get('token'))).getUser().login
+        userAndName[1] = name
+      }
+
+      processData(decodeToken(configProvider.get('token'))).getPakRepositoryData(userAndName[0], userAndName[1]).then(res => {
+        console.log(res)
+      }).catch(err => {
+        console.error(err)
+        process.exit(1)
+      })
+    })
+
   program.command('create <type> <name>').description('Create a repository, package ...')
     .action((type, name) => {
       const userAndName = name.split('/')
@@ -55,7 +100,7 @@ function mainCommand (argv) {
           userAndName[1] = name
         }
 
-        processData(decodeToken(configProvider.get('token'))).getRepositoryData(userAndName[0], userAndName[1]).then(repo => {
+        processData(decodeToken(configProvider.get('token'))).getGitRepositoryData(userAndName[0], userAndName[1]).then(repo => {
           const repoModel = RepoModel
           repoModel.name = repo.name
           repoModel.description = repo.description
@@ -117,7 +162,16 @@ function mainCommand (argv) {
           process.exit(1)
         })
       } else if (type === 'package') {
-        if (!options.repository) throw new Error('You need to specify the repository.')
+        if (!configProvider.has('token')) {
+          console.error('You need to authenticate first.')
+          process.exit(1)
+        }
+
+        if (!options.repository) {
+          console.error('You need to specify the repository.')
+          process.exit(1)
+        }
+
         processData(decodeToken(configProvider.get('token'))).deleteRelease(userAndName[0], userAndName[1], true).then(res => {})
       } else {
         console.error('Invalid type.')
