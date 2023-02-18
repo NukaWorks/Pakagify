@@ -51,7 +51,7 @@ function mainCommand (argv) {
       if (type === 'repository') {
         // Check if no org user specified
         if (userAndName.length <= 1) {
-          userAndName[0] = null
+          userAndName[0] = processData(decodeToken(configProvider.get('token'))).getUser().login
           userAndName[1] = name
         }
 
@@ -88,8 +88,10 @@ function mainCommand (argv) {
     })
 
   program.command('delete <type> <name>').description('Delete a repository, package ...')
+    .option('-repo, --repository', 'Select the repository.')
     .action((type, name) => {
       const userAndName = name.split('/')
+      const options = program.opts()
 
       if (!configProvider.has('token')) {
         console.error('You need to authenticate first.')
@@ -115,7 +117,8 @@ function mainCommand (argv) {
           process.exit(1)
         })
       } else if (type === 'package') {
-        // TODO
+        if (!options.repository) throw new Error('You need to specify the repository.')
+        processData(decodeToken(configProvider.get('token'))).deleteRelease(userAndName[0], userAndName[1], true).then(res => {})
       } else {
         console.error('Invalid type.')
         process.exit(1)
