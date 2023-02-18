@@ -61,8 +61,8 @@ function mainCommand (argv) {
       })
     })
 
-  program.command('testPakData <name>').description('Test Pakagify Data')
-    .action(name => {
+  program.command('info <type> <name>').description('Test Pakagify Data')
+    .action((type, name) => {
       const userAndName = name.split('/')
 
       if (!configProvider.has('token')) {
@@ -70,18 +70,22 @@ function mainCommand (argv) {
         process.exit(1)
       }
 
-      // Check if no org user specified
-      if (userAndName.length <= 1) {
-        userAndName[0] = processData(decodeToken(configProvider.get('token'))).getUser().login
-        userAndName[1] = name
-      }
+      if (type === 'repository') {
+        processData(decodeToken(configProvider.get('token'))).getUser().then(user => {
+          // Check if no org user specified
+          if (userAndName.length <= 1) {
+            userAndName[0] = user.login
+            userAndName[1] = name
+          }
 
-      processData(decodeToken(configProvider.get('token'))).getPakRepositoryData(userAndName[0], userAndName[1]).then(res => {
-        console.log(res)
-      }).catch(err => {
-        console.error(err)
-        process.exit(1)
-      })
+          processData(decodeToken(configProvider.get('token'))).getPakRepositoryData(userAndName[0], userAndName[1]).then(res => {
+            console.log(res)
+          }).catch(err => {
+            console.error(err)
+            process.exit(1)
+          })
+        })
+      }
     })
 
   program.command('create <type> <name>').description('Create a repository, package ...')
