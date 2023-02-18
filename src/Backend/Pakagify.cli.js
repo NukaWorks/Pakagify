@@ -2,6 +2,7 @@ import { program } from 'commander'
 import { version } from '../../package.json'
 import { ConfigProvider } from './Common/ConfigProvider'
 import { Pakagify } from './Pakagify'
+import { RepoModel } from './Common/Models/RepoModel'
 
 const configProvider = new ConfigProvider()
 
@@ -51,7 +52,11 @@ function mainCommand (argv) {
         }
 
         processData(decodeToken(configProvider.get('token'))).createRelease(userAndName[0], userAndName[1], true).then(res => {
-          console.log(`Successfully created repository ${name} on ${res.tag_name} !`)
+          processData(decodeToken(configProvider.get('token'))).pushRepoData(userAndName[0], userAndName[1], 'repo.json', JSON.stringify(RepoModel)).then(push => {
+            console.log(`Successfully created repository ${name} on ${res.tag_name} !`)
+            console.debug(push)
+          })
+
           console.debug(res)
         }).catch(err => {
           console.error(err)
