@@ -151,7 +151,15 @@ function mainCommand (argv) {
                 process.exit(1)
               })
           } else if (type === 'package') {
-            // TODO
+            // Check if no org user specified
+            if (userAndName.length <= 1) {
+              userAndName[0] = user.login
+              userAndName[1] = name
+            }
+
+            processData(decodeToken(configProvider.get('token'))).makePackage(userAndName[0], userAndName[1], 'test', '1.0.0', 'test de package', '/', 'x86_64', 'darwin', 'config').then(r => {
+              console.log(r)
+            })
           } else {
             console.error('Invalid type.')
             process.exit(1)
