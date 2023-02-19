@@ -1,16 +1,17 @@
 
 export const PackageModel = {
   name: '',
+  version: '',
   description: '',
   author: '',
-  url: '',
+  release_url: '',
   arch: '',
   platform: '',
   restart_required: false,
   last_updated: '',
   created_at: '',
   install_location: '',
-  files: [{ name: '', relativePath: '', sha: '' }],
+  files: [],
   scripts: {
     pre_inst: '',
     post_inst: ''
