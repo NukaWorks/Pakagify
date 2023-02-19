@@ -102,6 +102,16 @@ function mainCommand (argv) {
 
   program.command('create <type> <name>')
     .description('Create a repository, package ...')
+    .option('-repo, --repository', 'Select the repository for the package')
+    .option('-d, --description <description>', 'Description of the package')
+    .option('-v, --version <version>', 'Version of the package')
+    .option('-a, --arch <arch>', 'Architecture of the package')
+    .option('-p, --platform <platform>', 'Platform of the package')
+    .option('-r, --restart-required <restartRequired>', 'Restart required of the package')
+    .option('-i, --install-location <installLocation>', 'Install location of the package')
+    .option('-preinst, --preinst <preinst>', 'Preinstall Script')
+    .option('-postinst, --postinst <postinst>', 'Postinstall Script')
+
     .action((type, name) => {
       const userAndName = name.split('/')
 
@@ -158,7 +168,7 @@ function mainCommand (argv) {
             }
 
             processData(decodeToken(configProvider.get('token'))).makePackage(userAndName[0], userAndName[1], 'test', '1.0.0', 'test de package', '/', 'x86_64', 'darwin', 'config').then(r => {
-              console.log(r)
+              console.debug(r)
             })
           } else {
             console.error('Invalid type.')
@@ -169,7 +179,7 @@ function mainCommand (argv) {
 
   program.command('delete <type> <name>')
     .description('Delete a repository, package ...')
-    .option('-repo, --repository', 'Select the repository.')
+    .option('-repo, --repository', 'Select the repository for the package')
     .action((type, name) => {
       const userAndName = name.split('/')
       const options = program.opts()
