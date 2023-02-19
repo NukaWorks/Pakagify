@@ -89,7 +89,11 @@ export class Pakagify {
     packageModel.created_at = new Date().toISOString()
 
     return await this.getLatestRelease(user, repoName).then(async (release) => {
+      for (const asset in release.assets) {
+        if (asset.name === packageName) throw new Error('Package already exists')
+      }
       packageModel.release_url = release.html_url
+      console.debug(release)
 
       return packageModel
 
