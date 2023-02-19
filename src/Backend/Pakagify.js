@@ -1,6 +1,7 @@
 import { Octokit } from 'octokit'
 import { v4 as uuidv4 } from 'uuid'
 import fetch from 'node-fetch'
+import { PackageModel } from './Common/Models/PackageModel'
 
 export class Pakagify {
   #ghToken = ''
@@ -70,6 +71,32 @@ export class Pakagify {
           }
         }
       })
+  }
+
+  async makePackage (user, repoName, packageName, version, description, installLocation, arch, platform, dirs, preInst, postInst, restartRequired) {
+    const packageModel = PackageModel
+    packageModel.name = packageName
+    packageModel.version = version
+    packageModel.arch = arch || process.arch
+    packageModel.description = description || ''
+    packageModel.install_location = installLocation
+    packageModel.platform = platform || process.platform
+    packageModel.author = user
+    packageModel.restart_required = restartRequired || false
+    packageModel.scripts.pre_inst = preInst || ''
+    packageModel.scripts.post_inst = postInst || ''
+    packageModel.last_updated = new Date().toISOString()
+    packageModel.created_at = new Date().toISOString()
+
+    return await this.getLatestRelease(user, repoName).then(async (release) => {
+      packageModel.release_url = release.html_url
+
+      return packageModel
+
+      // Fetch the repo data
+      // return this.getPakRepositoryData(user, repoName).then(async (repoData) => {
+      // })
+    })
   }
 
   async deleteRelease (user, repoName) {
