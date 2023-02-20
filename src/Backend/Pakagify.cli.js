@@ -102,7 +102,8 @@ function mainCommand (argv) {
 
   program.command('create <type> <name>')
     .description('Create a repository, package ...')
-    .option('-repo, --repository', 'Select the repository for the package')
+    .option('-R, --repository', 'Select the repository for the package')
+    .option('-n', '--no-keep', 'Delete the generated package on the local directory')
     .option('-d, --description <description>', 'Description of the package')
     .option('-v, --version <version>', 'Version of the package')
     .option('-a, --arch <arch>', 'Architecture of the package')
@@ -179,7 +180,7 @@ function mainCommand (argv) {
 
   program.command('delete <type> <name>')
     .description('Delete a repository, package ...')
-    .option('-repo, --repository', 'Select the repository for the package')
+    .option('-R, --repository', 'Select the repository for the package to delete')
     .action((type, name) => {
       const userAndName = name.split('/')
       const options = program.opts()
