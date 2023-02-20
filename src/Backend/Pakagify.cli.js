@@ -17,7 +17,7 @@ function decodeToken (token) {
 
 function mainCommand (argv) {
   program
-    .name('pcli')
+    .name('pkcli')
     .description('Pakagify CLI')
     .version(version)
 
