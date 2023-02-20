@@ -102,14 +102,14 @@ function mainCommand (argv) {
 
   program.command('create <type> <name>')
     .description('Create a repository, package ...')
-    .option('-R, --repository', 'Select the repository for the package')
+    .requiredOption('-R, --repository', 'Select the repository for the package')
+    .requiredOption('-v, --version <version>', 'Version of the package')
+    .requiredOption('-a, --arch <arch>', 'Architecture of the package')
+    .requiredOption('-p, --platform <platform>', 'Platform of the package')
+    .requiredOption('-i, --install-location <installLocation>', 'Install location of the package')
     .option('-n', '--no-keep', 'Delete the generated package on the local directory')
     .option('-d, --description <description>', 'Description of the package')
-    .option('-v, --version <version>', 'Version of the package')
-    .option('-a, --arch <arch>', 'Architecture of the package')
-    .option('-p, --platform <platform>', 'Platform of the package')
     .option('-r, --restart-required <restartRequired>', 'Restart required of the package')
-    .option('-i, --install-location <installLocation>', 'Install location of the package')
     .option('-preinst, --preinst <preinst>', 'Preinstall Script')
     .option('-postinst, --postinst <postinst>', 'Postinstall Script')
 
@@ -162,6 +162,8 @@ function mainCommand (argv) {
                 process.exit(1)
               })
           } else if (type === 'package') {
+            const options = program.opts()
+
             // Check if no org user specified
             if (userAndName.length <= 1) {
               userAndName[0] = user.login
@@ -180,7 +182,7 @@ function mainCommand (argv) {
 
   program.command('delete <type> <name>')
     .description('Delete a repository, package ...')
-    .option('-R, --repository', 'Select the repository for the package to delete')
+    .requiredOption('-R, --repository', 'Select the repository for the package to delete')
     .action((type, name) => {
       const userAndName = name.split('/')
       const options = program.opts()
