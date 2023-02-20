@@ -82,7 +82,7 @@ function mainCommand (argv) {
         processData(decodeToken(configProvider.get('token')))
           .getUser()
           .then(user => {
-          // Check if no org user specified
+            // Check if no org user specified
             if (userAndName.length <= 1) {
               userAndName[0] = user.login
               userAndName[1] = name
@@ -100,21 +100,20 @@ function mainCommand (argv) {
       }
     })
 
-  program.command('create <type> <name>')
+  program.command('create <type> <name> <dirs...>')
     .description('Create a repository, package ...')
-    .requiredOption('-R, --repository', 'Select the repository for the package')
     .requiredOption('-v, --version <version>', 'Version of the package')
     .requiredOption('-a, --arch <arch>', 'Architecture of the package')
     .requiredOption('-p, --platform <platform>', 'Platform of the package')
     .requiredOption('-i, --install-location <installLocation>', 'Install location of the package')
+    .option('-R, --repository <repository>', 'Select the repository for the package')
     .option('-n', '--no-keep', 'Delete the generated package on the local directory')
     .option('-d, --description <description>', 'Description of the package')
-    .option('-r, --restart-required <restartRequired>', 'Restart required of the package')
+    .option('-r, --restart-required', 'Restart required of the package')
     .option('-preinst, --preinst <preinst>', 'Preinstall Script')
     .option('-postinst, --postinst <postinst>', 'Postinstall Script')
-
-    .action((type, name) => {
-      const userAndName = name.split('/')
+    .action((type, name, dirs, options) => {
+      let userAndName = name.split('/')
 
       if (!configProvider.has('token')) {
         console.error('You need to authenticate first.')
@@ -162,17 +161,33 @@ function mainCommand (argv) {
                 process.exit(1)
               })
           } else if (type === 'package') {
-            const options = program.opts()
+            userAndName = options.repository.split('/')
 
             // Check if no org user specified
             if (userAndName.length <= 1) {
               userAndName[0] = user.login
-              userAndName[1] = name
+              userAndName[1] = options.repository
             }
 
-            processData(decodeToken(configProvider.get('token'))).makePackage(userAndName[0], userAndName[1], 'test', '1.0.0', 'test de package', '/', 'x86_64', 'darwin', 'config').then(r => {
-              console.debug(r)
-            })
+            if (!options.repository) {
+              console.error('You need to specify the repository.')
+              process.exit(1)
+            }
+
+            processData(decodeToken(configProvider.get('token')))
+              .makePackage(
+                userAndName[0],
+                userAndName[1],
+                name,
+                options.version,
+                options.description,
+                options.installLocation,
+                options.arch,
+                options.platform,
+                dirs)
+              .then(r => {
+                console.debug(r)
+              })
           } else {
             console.error('Invalid type.')
             process.exit(1)
@@ -182,7 +197,7 @@ function mainCommand (argv) {
 
   program.command('delete <type> <name>')
     .description('Delete a repository, package ...')
-    .requiredOption('-R, --repository', 'Select the repository for the package to delete')
+    .option('-R, --repository', 'Select the repository for the package to delete')
     .action((type, name) => {
       const userAndName = name.split('/')
       const options = program.opts()
@@ -191,6 +206,7 @@ function mainCommand (argv) {
         console.error('You need to authenticate first.')
         process.exit(1)
       }
+
       processData(decodeToken(configProvider.get('token')))
         .getUser()
         .then(user => {
@@ -229,7 +245,8 @@ function mainCommand (argv) {
 
             processData(decodeToken(configProvider.get('token')))
               .deleteRelease(userAndName[0], userAndName[1], true)
-              .then(res => {})
+              .then(res => {
+              })
           } else {
             console.error('Invalid type.')
             process.exit(1)
