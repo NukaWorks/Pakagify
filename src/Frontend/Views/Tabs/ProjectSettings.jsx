@@ -40,7 +40,7 @@ export default function ProjectSettings () {
         <Text size={16} style={{ fontWeight: 500 }}>Danger Zone</Text>
 
         <FlexLayout spacing={5} direction={'Vertical'}>
-          <Text size={11}>Delete Project</Text>
+          <Text size={11}>Delete All Releases</Text>
           <Button color={'Alert'}>Delete</Button>
         </FlexLayout>
       </SectionElement>

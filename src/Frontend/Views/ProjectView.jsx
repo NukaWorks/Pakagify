@@ -3,7 +3,7 @@ import { AppActivity, StackLayout, Tab, TabList, TabPanel, Tabs, UiApp } from '@
 import Header from '../Common/Components/Header'
 import ProjectSettings from './Tabs/ProjectSettings'
 import Packages from './Tabs/Packages'
-import Artifacts from './Tabs/Artifacts'
+import Releases from './Tabs/Releases'
 
 export default function ProjectView () {
   return (
@@ -14,13 +14,13 @@ export default function ProjectView () {
         <StackLayout direction={'Vertical'}>
           <Tabs>
             <TabList>
-              <Tab>Artifacts</Tab>
+              <Tab>Releases</Tab>
               <Tab>Packages</Tab>
               <Tab>Settings</Tab>
             </TabList>
 
             <TabPanel>
-              <Artifacts />
+              <Releases />
             </TabPanel>
 
             <TabPanel>
