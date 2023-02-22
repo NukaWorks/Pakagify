@@ -123,7 +123,7 @@ function AboutDialog ({ ...props }) {
       <FlexLayout direction={'Vertical'} spacing={15}>
         <Text size={16}>About</Text>
         <StackLayout spacing={5} direction={'Vertical'}>
-          <Text size={12}>Pakagify is a simple project manager for Github.</Text>
+          <Text size={12} style={{ textAlign: 'center' }}>Pakagify is a simple package creation tool on top of Releases for Github.</Text>
           <Text size={9} style={{ textAlign: 'center' }}>Made by <Link href={'https://github.com/Powerm1nt'}>@Powerm1nt</Link> with ❤️</Text>
         </StackLayout>
 
