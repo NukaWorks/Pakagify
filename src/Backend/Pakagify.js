@@ -2,6 +2,8 @@ import { Octokit } from 'octokit'
 import { v4 as uuidv4 } from 'uuid'
 import fetch from 'node-fetch'
 import { PackageModel } from './Common/Models/PackageModel'
+import { listFilesRecursively } from './Common/Utils'
+import AdmZip from 'adm-zip'
 
 export class Pakagify {
   #ghToken = ''
@@ -73,7 +75,7 @@ export class Pakagify {
       })
   }
 
-  async makePackage (user, repoName, packageName, version, description, installLocation, arch, platform, dirs, preInst, postInst, restartRequired) {
+  async makePackage (user, repoName, packageName, version, description, installLocation, arch, platform, files, preInst, postInst, restartRequired) {
     const packageModel = PackageModel
     packageModel.name = packageName
     packageModel.version = version
@@ -95,7 +97,21 @@ export class Pakagify {
       packageModel.release_url = release.html_url
       console.debug(release)
 
-      return packageModel
+      // Make a zip file with adm-zip
+      const zip = new AdmZip('', undefined)
+      const fileList = listFilesRecursively(files)
+
+      fileList.forEach(file => {
+        zip.addLocalFile(file, '/Contents')
+      })
+
+      packageModel.files = fileList
+      zip.addFile('pak.json', Buffer.from(JSON.stringify(packageModel), 'utf8'), '', null)
+
+      return zip.writeZipPromise(`${packageName}-${platform}_${arch}.zip`, null).then(() => {
+        console.log(listFilesRecursively(files))
+        return packageModel
+      })
 
       // Fetch the repo data
       // return this.getPakRepositoryData(user, repoName).then(async (repoData) => {
