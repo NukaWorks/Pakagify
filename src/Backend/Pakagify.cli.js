@@ -5,7 +5,7 @@ import { Pakagify } from './Pakagify'
 import { RepoModel } from './Common/Models/RepoModel'
 
 const configProvider = new ConfigProvider()
-
+const DEBUG_MODE = false
 function processData (token) {
   if (!processData.instance) processData.instance = new Pakagify(token)
   return processData.instance
@@ -20,6 +20,13 @@ function mainCommand (argv) {
     .name('pkcli')
     .description('Pakagify CLI')
     .version(version)
+    .option('-D, --debug', 'Debug mode')
+
+  // DEBUG_MODE = program.opts().debug
+  //
+  // console.log(program)
+
+  DEBUG_MODE && console.log('DEBUG MODE ENABLED !')
 
   program.command('auth <token>')
     .description('Authenticate with Github Token.')
@@ -69,9 +76,10 @@ function mainCommand (argv) {
     })
 
   program.command('info <type> <name>')
-    .description('Test Pakagify Data')
-    .action((type, name) => {
-      const userAndName = name.split('/')
+    .description('Get info about a repository, package...')
+    .option('-R, --repository <repository>', 'Select the repository for the package')
+    .action((type, name, options) => {
+      let userAndName = name.split('/')
 
       if (!configProvider.has('token')) {
         console.error('You need to authenticate first.')
@@ -90,6 +98,32 @@ function mainCommand (argv) {
 
             processData(decodeToken(configProvider.get('token')))
               .getPakRepositoryData(userAndName[0], userAndName[1])
+              .then(res => {
+                console.log(res)
+              }).catch(err => {
+                console.error(err)
+                process.exit(1)
+              })
+          })
+      } else {
+        if (!options.repository) {
+          console.error('You need to specify the repository.')
+          process.exit(1)
+        }
+
+        processData(configProvider.get('token'))
+          .getUser()
+          .then(user => {
+            userAndName = options.repository.split('/')
+
+            // Check if no org user specified
+            if (userAndName.length <= 1) {
+              userAndName[0] = user.login
+              userAndName[1] = options.repository
+            }
+
+            processData(decodeToken(configProvider.get('token')))
+              .getPackageData(userAndName[0], userAndName[1], name)
               .then(res => {
                 console.log(res)
               }).catch(err => {
