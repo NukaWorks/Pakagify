@@ -16,6 +16,12 @@ function decodeToken (token) {
 }
 
 function mainCommand (argv) {
+  // argv.forEach(arg => {
+  //   if (arg.length <= 0 || (arg.match('-h') || arg.match('help'))) {
+  //     console.log('// TODO ASCII pkcli logo')
+  //   }
+  // })
+
   program
     .name('pkcli')
     .description('Pakagify CLI')
