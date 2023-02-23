@@ -5,7 +5,7 @@ import { Pakagify } from './Pakagify'
 import { RepoModel } from './Common/Models/RepoModel'
 
 const configProvider = new ConfigProvider()
-const DEBUG_MODE = false
+let DEBUG_MODE = false
 function processData (token) {
   if (!processData.instance) processData.instance = new Pakagify(token)
   return processData.instance
@@ -21,6 +21,10 @@ function mainCommand (argv) {
   //     console.log('// TODO ASCII pkcli logo')
   //   }
   // })
+
+  argv.forEach(arg => {
+    if ((arg.match('-D'))) DEBUG_MODE = true
+  })
 
   program
     .name('pkcli')
@@ -105,7 +109,7 @@ function mainCommand (argv) {
             processData(decodeToken(configProvider.get('token')))
               .getPakRepositoryData(userAndName[0], userAndName[1])
               .then(res => {
-                console.debug(res)
+                DEBUG_MODE && console.debug(res)
               }).catch(err => {
                 console.error(err)
                 process.exit(1)
@@ -131,7 +135,7 @@ function mainCommand (argv) {
             processData(decodeToken(configProvider.get('token')))
               .getPackageData(userAndName[0], userAndName[1], name)
               .then(res => {
-                console.debug(res)
+                DEBUG_MODE && console.debug(res)
               }).catch(err => {
                 console.error(err)
                 process.exit(1)
@@ -189,13 +193,13 @@ function mainCommand (argv) {
                       .pushRepoData(userAndName[0], userAndName[1], 'repo.json',
                         JSON.stringify(RepoModel)).then(push => {
                         console.log(`Successfully created repository ${name} on ${res.tag_name} !`)
-                        console.debug(push)
+                        DEBUG_MODE && console.debug(push)
                       })
 
-                    console.debug(res)
+                    DEBUG_MODE && console.debug(res)
                   })
 
-                console.debug(repo)
+                DEBUG_MODE && console.debug(repo)
               }).catch(err => {
                 console.error(err)
                 process.exit(1)
@@ -226,7 +230,7 @@ function mainCommand (argv) {
                 options.platform,
                 dirs)
               .then(r => {
-                console.debug(r)
+                DEBUG_MODE && console.debug(r)
               })
           } else {
             console.error('Invalid type.')
@@ -267,7 +271,7 @@ function mainCommand (argv) {
               .deleteRelease(userAndName[0], userAndName[1], true)
               .then(res => {
                 console.log(`Successfully deleted repository ${name} on ${latestReleaseTag} !`)
-                console.debug(res)
+                DEBUG_MODE && console.debug(res)
               }).catch(err => {
                 console.error(err)
                 process.exit(1)
