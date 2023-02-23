@@ -113,8 +113,7 @@ export class Pakagify {
       packageModel.files = fileList
 
       fileList.forEach(file => {
-        if (file.isDirectory()) zip.addLocalFolder(file, '/Contents')
-        zip.addLocalFile(file, '/Contents')
+        zip.addLocalFile(file, '/Contents/' + file)
       })
 
       zip.addFile('pak.json', Buffer.from(JSON.stringify(packageModel), 'utf8'), '', null)
