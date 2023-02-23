@@ -75,6 +75,16 @@ export class Pakagify {
       })
   }
 
+  async getPackageData (user, repoName, packageName) {
+    return this.getPakRepositoryData(user, repoName).then(repo => {
+      repo.packages.forEach(pkg => {
+        if (pkg.name === packageName) {
+          return pkg
+        } else throw new Error('Package not found')
+      })
+    })
+  }
+
   async makePackage (user, repoName, packageName, version, description, installLocation, arch, platform, files, preInst, postInst, restartRequired) {
     const packageModel = PackageModel
     packageModel.name = packageName
