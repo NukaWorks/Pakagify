@@ -110,13 +110,19 @@ export class Pakagify {
       zip.addFile('pak.json', Buffer.from(JSON.stringify(packageModel), 'utf8'), '', null)
 
       return zip.writeZipPromise(`${packageName}-${platform}_${arch}.zip`, null).then(() => {
-        console.log(listFilesRecursively(files))
-        return packageModel
-      })
+        // TODO Impl optimized code for large upload
 
-      // Fetch the repo data
-      // return this.getPakRepositoryData(user, repoName).then(async (repoData) => {
-      // })
+        // Fetch the repo data
+        return this.getPakRepositoryData(user, repoName).then(async (repoData) => {
+          const repoDataPatch = repoData
+          repoDataPatch.packages.push(packageModel)
+          repoDataPatch.last_updated = new Date().toISOString()
+
+          return this.deleteAsset(user, repoName, 'repo.json').then(async () => {
+            return await this.pushRepoData(user, repoName, 'repo.json', JSON.stringify(repoDataPatch))
+          })
+        })
+      })
     })
   }
 
