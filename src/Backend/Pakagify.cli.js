@@ -26,7 +26,7 @@ function mainCommand (argv) {
   //
   // console.log(program)
 
-  DEBUG_MODE && console.log('DEBUG MODE ENABLED !')
+  // DEBUG_MODE && console.log('DEBUG MODE ENABLED !')
 
   program.command('auth <token>')
     .description('Authenticate with Github Token.')
@@ -99,7 +99,7 @@ function mainCommand (argv) {
             processData(decodeToken(configProvider.get('token')))
               .getPakRepositoryData(userAndName[0], userAndName[1])
               .then(res => {
-                console.log(res)
+                console.debug(res)
               }).catch(err => {
                 console.error(err)
                 process.exit(1)
@@ -125,7 +125,7 @@ function mainCommand (argv) {
             processData(decodeToken(configProvider.get('token')))
               .getPackageData(userAndName[0], userAndName[1], name)
               .then(res => {
-                console.log(res)
+                console.debug(res)
               }).catch(err => {
                 console.error(err)
                 process.exit(1)
