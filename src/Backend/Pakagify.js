@@ -109,7 +109,7 @@ export class Pakagify {
 
       zip.addFile('pak.json', Buffer.from(JSON.stringify(packageModel), 'utf8'), '', null)
 
-      return zip.writeZipPromise(`${packageName}-${platform}_${arch}.zip`, null).then(() => {
+      return zip.writeZipPromise(`${packageName}-${platform}_${arch}.pkg.zip`, null).then(() => {
         // TODO Impl optimized code for large upload
 
         // Fetch the repo data
