@@ -100,12 +100,13 @@ export class Pakagify {
       // Make a zip file with adm-zip
       const zip = new AdmZip('', undefined)
       const fileList = listFilesRecursively(files)
+      packageModel.files = fileList
 
       fileList.forEach(file => {
+        if (file.isDirectory()) zip.addLocalFolder(file, '/Contents')
         zip.addLocalFile(file, '/Contents')
       })
 
-      packageModel.files = fileList
       zip.addFile('pak.json', Buffer.from(JSON.stringify(packageModel), 'utf8'), '', null)
 
       return zip.writeZipPromise(`${packageName}-${platform}_${arch}.zip`, null).then(() => {
