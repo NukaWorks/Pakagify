@@ -85,7 +85,20 @@ export class Pakagify {
     })
   }
 
-  async makePackage (user, repoName, packageName, version, description, installLocation, arch, platform, files, preInst, postInst, restartRequired) {
+  async makePackage (
+    user,
+    repoName,
+    packageName,
+    version,
+    description,
+    installLocation,
+    arch,
+    platform,
+    files,
+    preInst,
+    postInst,
+    restartRequired
+  ) {
     const packageModel = PackageModel
     packageModel.name = packageName
     packageModel.version = version
