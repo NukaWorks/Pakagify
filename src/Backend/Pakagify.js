@@ -4,6 +4,7 @@ import fetch from 'node-fetch'
 import { PackageModel } from './Common/Models/PackageModel'
 import { listFilesRecursively } from './Common/Utils'
 import AdmZip from 'adm-zip'
+import { RepoModel } from './Common/Models/RepoModel'
 
 export class Pakagify {
   #ghToken = ''
@@ -38,17 +39,19 @@ export class Pakagify {
   }
 
   async deleteAsset (user, repoName, assetName) {
-    return this.#octokit.rest.repos.get({ owner: user, repo: repoName })
-      .then(async ({ data }) => {
-        for (const asset of data.assets) {
+    return this.getLatestRelease(user, repoName)
+      .then(async rel => {
+        for (const asset of rel.assets) {
           if (asset.name === assetName) {
-            await this.#octokit.rest.repos.getReleaseAsset({
+            await this.#octokit.rest.repos.deleteReleaseAsset({
               owner: user,
               repo: repoName,
               asset_id: asset.id
             }).then(async (res) => {
               return res
             })
+          } else {
+            throw new Error('Asset not found')
           }
         }
       })
@@ -62,9 +65,9 @@ export class Pakagify {
   }
 
   async getPakRepositoryData (user, repoName) {
-    return this.#octokit.rest.repos.getLatestRelease({ owner: user, repo: repoName })
-      .then(async ({ data }) => {
-        for (const asset of data.assets) {
+    return this.getLatestRelease(user, repoName)
+      .then(async rel => {
+        for (const asset of rel.assets) {
           if (asset.name === 'repo.json') {
           // Get the asset data
             return await fetch(`https://api.github.com/repos/${user}/${repoName}/releases/assets/${asset.id}`, {
@@ -83,6 +86,43 @@ export class Pakagify {
         } else throw new Error('Package not found')
       })
     })
+  }
+
+  async makeRepository (user, repoName, isDebug) {
+    return this.getGitRepositoryData(user, repoName)
+      .then(repo => {
+        const repoModel = RepoModel
+        repoModel.name = repo.name
+        repoModel.description = repo.description
+        repoModel.author = repo.owner.login
+        repoModel.url = repo.html_url
+        repoModel.last_updated = new Date().toISOString()
+        repoModel.created_at = new Date().toISOString()
+        repoModel.license = repo.license
+
+        isDebug && console.debug(repo)
+
+        return this.createRelease(user, repoName, true)
+          .then(async rel => {
+            isDebug && console.debug(rel)
+
+            return await this.pushRepoData(user, repoName, 'repo.json',
+              JSON.stringify(RepoModel)).then(push => {
+              isDebug && console.debug(push)
+
+              // Group the data
+              push.asset = push.data
+              delete push.data
+              push.release = rel
+              push.repo = repo
+
+              return push
+            })
+          })
+      }).catch(err => {
+        console.error(err)
+        process.exit(1)
+      })
   }
 
   async makePackage (
@@ -136,11 +176,18 @@ export class Pakagify {
 
         // Fetch the repo data
         return this.getPakRepositoryData(user, repoName).then(async (repoData) => {
+          // Checks if the package already exists on the repo, if so, delete it (in case of update)
+          repoData.packages.forEach((value, index, array) => {
+            if (value.name === packageName) array.splice(index, 1)
+          })
+
+          // Make a copy and patch the repo data
           const repoDataPatch = repoData
           repoDataPatch.packages.push(packageModel)
           repoDataPatch.last_updated = new Date().toISOString()
 
-          return this.deleteAsset(user, repoName, 'repo.json').then(async () => {
+          return this.deleteAsset(user, repoName, 'repo.json').then(async res => {
+            console.debug(res)
             return await this.pushRepoData(user, repoName, 'repo.json', JSON.stringify(repoDataPatch))
           })
         })
