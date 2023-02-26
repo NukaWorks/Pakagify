@@ -159,7 +159,6 @@ export class Pakagify {
         if (asset.name === packageName) throw new Error('Package already exists')
       }
       packageModel.release_url = release.html_url
-      console.debug(release)
 
       // Make a zip file with adm-zip
       const zip = new AdmZip('', undefined)
@@ -169,7 +168,6 @@ export class Pakagify {
       fileList.forEach(file => {
         const fileName = file.split('/').pop()
         if (fs.lstatSync(file).isDirectory()) {
-          console.log('Adding folder: ' + file)
           zip.addLocalFolder(fileName, '/Contents/' + fileName)
         } else zip.addLocalFile(file, '/Contents/' + fileName)
       })
@@ -191,8 +189,7 @@ export class Pakagify {
           repoDataPatch.packages.push(packageModel)
           repoDataPatch.last_updated = new Date().toISOString()
 
-          return this.deleteAsset(user, repoName, 'repo.json').then(async res => {
-            console.debug(res)
+          return this.deleteAsset(user, repoName, 'repo.json').then(async () => {
             return await this.pushRepoData(user, repoName, 'repo.json', JSON.stringify(repoDataPatch))
           })
         })
