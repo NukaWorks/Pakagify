@@ -5,6 +5,7 @@ import { PackageModel } from './Common/Models/PackageModel'
 import { listFilesRecursively } from './Common/Utils'
 import AdmZip from 'adm-zip'
 import { RepoModel } from './Common/Models/RepoModel'
+import fs from 'fs'
 
 export class Pakagify {
   #ghToken = ''
@@ -166,7 +167,11 @@ export class Pakagify {
       packageModel.files = fileList
 
       fileList.forEach(file => {
-        zip.addLocalFile(file, '/Contents/' + file)
+        const fileName = file.split('/').pop()
+        if (fs.lstatSync(file).isDirectory()) {
+          console.log('Adding folder: ' + file)
+          zip.addLocalFolder(fileName, '/Contents/' + fileName)
+        } else zip.addLocalFile(file, '/Contents/' + fileName)
       })
 
       zip.addFile('pak.json', Buffer.from(JSON.stringify(packageModel), 'utf8'), '', null)
