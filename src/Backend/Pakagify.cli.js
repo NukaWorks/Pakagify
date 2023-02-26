@@ -2,7 +2,6 @@ import { program } from 'commander'
 import { version } from '../../package.json'
 import { ConfigProvider } from './Common/ConfigProvider'
 import { Pakagify } from './Pakagify'
-import { RepoModel } from './Common/Models/RepoModel'
 
 const configProvider = new ConfigProvider()
 let DEBUG_MODE = false
@@ -144,19 +143,20 @@ function mainCommand (argv) {
       }
     })
 
-  program.command('create <type> <name> <dirs...>')
+  program.command('create <type> <name>')
     .description('Create a repository, package ...')
-    .requiredOption('-v, --version <version>', 'Version of the package')
-    .requiredOption('-a, --arch <arch>', 'Architecture of the package')
-    .requiredOption('-p, --platform <platform>', 'Platform of the package')
-    .requiredOption('-i, --install-location <installLocation>', 'Install location of the package')
+    .option('-v, --version <version>', 'Version of the package')
+    .option('-a, --arch <arch>', 'Architecture of the package')
+    .option('-p, --platform <platform>', 'Platform of the package')
+    .option('-i, --install-location <installLocation>', 'Install location of the package')
     .option('-R, --repository <repository>', 'Select the repository for the package')
+    .option('-e, --dirs <dirs...>', 'Directories to include in the package')
     .option('-n', '--no-keep', 'Delete the generated package on the local directory')
     .option('-d, --description <description>', 'Description of the package')
     .option('-r, --restart-required', 'Restart required of the package')
     .option('-preinst, --preinst <preinst>', 'Preinstall Script')
     .option('-postinst, --postinst <postinst>', 'Postinstall Script')
-    .action((type, name, dirs, options) => {
+    .action((type, name, options) => {
       let userAndName = name.split('/')
 
       if (!configProvider.has('token')) {
@@ -175,31 +175,10 @@ function mainCommand (argv) {
             }
 
             processData(decodeToken(configProvider.get('token')))
-              .getGitRepositoryData(userAndName[0], userAndName[1])
-              .then(repo => {
-                const repoModel = RepoModel
-                repoModel.name = repo.name
-                repoModel.description = repo.description
-                repoModel.author = repo.owner.login
-                repoModel.url = repo.html_url
-                repoModel.last_updated = repo.updated_at
-                repoModel.created_at = repo.created_at
-                repoModel.license = repo.license
-
-                processData(decodeToken(configProvider.get('token')))
-                  .createRelease(userAndName[0], userAndName[1], true)
-                  .then(res => {
-                    processData(decodeToken(configProvider.get('token')))
-                      .pushRepoData(userAndName[0], userAndName[1], 'repo.json',
-                        JSON.stringify(RepoModel)).then(push => {
-                        console.log(`Successfully created repository ${name} on ${res.tag_name} !`)
-                        DEBUG_MODE && console.debug(push)
-                      })
-
-                    DEBUG_MODE && console.debug(res)
-                  })
-
-                DEBUG_MODE && console.debug(repo)
+              .makeRepository(userAndName[0], userAndName[1])
+              .then(res => {
+                console.log(`Successfully created repository ${res.repo.name} !`)
+                DEBUG_MODE && console.debug(res)
               }).catch(err => {
                 console.error(err)
                 process.exit(1)
@@ -213,9 +192,31 @@ function mainCommand (argv) {
               userAndName[1] = options.repository
             }
 
-            if (!options.repository) {
-              console.error('You need to specify the repository.')
-              process.exit(1)
+            switch (!options) {
+              case options.repository: {
+                console.error('You need to specify the repository.')
+                return process.exit(1)
+              }
+
+              case options.version: {
+                console.error('You need to specify the version.')
+                return process.exit(1)
+              }
+
+              case options.arch: {
+                console.error('You need to specify the architecture.')
+                return process.exit(1)
+              }
+
+              case options.platform: {
+                console.error('You need to specify the platform.')
+                return process.exit(1)
+              }
+
+              case options.installLocation: {
+                console.error('You need to specify the install location.')
+                return process.exit(1)
+              }
             }
 
             processData(decodeToken(configProvider.get('token')))
@@ -228,7 +229,7 @@ function mainCommand (argv) {
                 options.installLocation,
                 options.arch,
                 options.platform,
-                dirs)
+                options.dirs)
               .then(r => {
                 DEBUG_MODE && console.debug(r)
               })
@@ -282,9 +283,11 @@ function mainCommand (argv) {
               process.exit(1)
             }
 
-            if (!options.repository) {
-              console.error('You need to specify the repository.')
-              process.exit(1)
+            switch (!options) {
+              case options.repository: {
+                console.error('You need to specify the repository.')
+                return process.exit(1)
+              }
             }
 
             processData(decodeToken(configProvider.get('token')))
