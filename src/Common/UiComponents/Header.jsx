@@ -10,7 +10,7 @@ import {
   MenuList,
   openDialogOverlay
 } from '@powerws/uikit'
-import { commercial_name } from '../../../../package.json'
+import { commercial_name } from '../../../package.json'
 import PropTypes from 'prop-types'
 
 export default function Header ({ displayBackground }) {

@@ -1,10 +1,10 @@
 import { Octokit } from 'octokit'
 import { v4 as uuidv4 } from 'uuid'
 import fetch from 'node-fetch'
-import { PackageModel } from './Common/Models/PackageModel'
-import { listFilesRecursively } from './Common/Utils'
+import { PackageModel } from './DataModels/PackageModel'
+import { listFilesRecursively } from './Utils'
 import AdmZip from 'adm-zip'
-import { RepoModel } from './Common/Models/RepoModel'
+import { RepoModel } from './DataModels/RepoModel'
 import fs from 'fs'
 
 export class Pakagify {

@@ -1,6 +1,6 @@
 import React from 'react'
 import { AppActivity, StackLayout, Tab, TabList, TabPanel, Tabs, UiApp } from '@powerws/uikit'
-import Header from '../Common/Components/Header'
+import Header from '../../Common/UiComponents/Header'
 import ProjectSettings from './Tabs/ProjectSettings'
 import Packages from './Tabs/Packages'
 import Releases from './Tabs/Releases'

@@ -14,7 +14,7 @@ import {
   TextField
 } from '@powerws/uikit'
 import { useDetectClickOutside } from 'react-detect-click-outside'
-import { Pakagify } from '../Backend/Pakagify'
+import { Pakagify } from '../Common/Pakagify'
 
 let pakagify = null
 if (window.localStorage.getItem('gh-token')) {

@@ -7,7 +7,7 @@
   "scripts": {
     "dev:web": "vite --host --port 3000",
     "dev:electron": "electron .",
-    "dev:cli": "rm -rf build && mkdir build && esbuild --bundle src/Backend/Pakagify.cli.js --platform=node --outfile=build/pkcli.js && node build/pkcli.js",
+    "dev:cli": "rm -rf build && mkdir build && esbuild --bundle src/PkCli/Pakagify.cli.js --platform=node --outfile=build/pkcli.js && node build/pkcli.js",
     "build": "vite build",
     "preview": "vite preview"
   },

@@ -1,6 +1,6 @@
 import React from 'react'
 import { AppActivity, Button, DialogOverlayContext, openDialogOverlay, StackLayout, UiApp } from '@powerws/uikit'
-import Sidebar from '../Common/Components/Sidebar'
+import Sidebar from '../../Common/UiComponents/Sidebar'
 
 export default function RecentView () {
   const context = React.useContext(DialogOverlayContext)

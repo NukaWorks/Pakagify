@@ -1,7 +1,7 @@
 import { program } from 'commander'
 import { version } from '../../package.json'
-import { ConfigProvider } from './Common/ConfigProvider'
-import { Pakagify } from './Pakagify'
+import { ConfigProvider } from '../Common/ConfigProvider'
+import { Pakagify } from '../Common/Pakagify'
 import chalk from 'chalk'
 
 const configProvider = new ConfigProvider()
