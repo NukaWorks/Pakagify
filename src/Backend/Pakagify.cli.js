@@ -2,6 +2,7 @@ import { program } from 'commander'
 import { version } from '../../package.json'
 import { ConfigProvider } from './Common/ConfigProvider'
 import { Pakagify } from './Pakagify'
+import chalk from 'chalk'
 
 const configProvider = new ConfigProvider()
 let DEBUG_MODE = false
@@ -51,7 +52,7 @@ function mainCommand (argv) {
         .getUser()
         .then(user => {
           configProvider.save()
-          console.log(`Successfully authenticated as ${user.login} !`)
+          console.log(`${chalk.bold.greenBright('Successfully')} authenticated as ${chalk.bold.white(user.login)} !`)
         }).catch(err => {
           console.error(err)
           process.exit(1)
@@ -77,7 +78,7 @@ function mainCommand (argv) {
       processData(decodeToken(configProvider.get('token')))
         .getUser()
         .then(user => {
-          console.log(`You are currently authenticated as ${user.login} !`)
+          console.log(`You are currently authenticated as ${chalk.bold.white(user.login)} !`)
         }).catch(err => {
           console.error(err)
           process.exit(1)
@@ -177,7 +178,7 @@ function mainCommand (argv) {
             processData(decodeToken(configProvider.get('token')))
               .makeRepository(userAndName[0], userAndName[1])
               .then(res => {
-                console.log(`Successfully created repository ${res.repo.name} !`)
+                console.log(`${chalk.bold.greenBright('Successfully')} created repository ${chalk.bold.white(res.repo.name)} !`)
                 DEBUG_MODE && console.debug(res)
               }).catch(err => {
                 console.error(err)
@@ -271,7 +272,7 @@ function mainCommand (argv) {
             processData(decodeToken(configProvider.get('token')))
               .deleteRelease(userAndName[0], userAndName[1], true)
               .then(res => {
-                console.log(`Successfully deleted repository ${name} on ${latestReleaseTag} !`)
+                console.log(`${chalk.bold.greenBright('Successfully')} deleted repository ${chalk.bold.white(name)} ${chalk.grey(`(${latestReleaseTag})`)} !`)
                 DEBUG_MODE && console.debug(res)
               }).catch(err => {
                 console.error(err)
