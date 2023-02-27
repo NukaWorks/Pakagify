@@ -32,12 +32,6 @@ function mainCommand (argv) {
     .version(version)
     .option('-D, --debug', 'Debug mode')
 
-  // DEBUG_MODE = program.opts().debug
-  //
-  // console.log(program)
-
-  // DEBUG_MODE && console.log('DEBUG MODE ENABLED !')
-
   program.command('auth <token>')
     .description('Authenticate with Github Token.')
     .action(token => {
