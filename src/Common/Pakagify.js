@@ -34,7 +34,11 @@ export class Pakagify {
           repo: repoName,
           release_id: data.id,
           name: fileName,
-          data: fileData
+          data: fileData,
+          onUploadProgress: (progressEvent) => {
+            const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total)
+            console.log(percentCompleted)
+          }
         })
       })
   }
@@ -189,8 +193,13 @@ export class Pakagify {
           repoDataPatch.packages.push(packageModel)
           repoDataPatch.last_updated = new Date().toISOString()
 
+          // Upload the asset
+
           return this.deleteAsset(user, repoName, 'repo.json').then(async () => {
-            return await this.pushRepoData(user, repoName, 'repo.json', JSON.stringify(repoDataPatch))
+            return this.pushRepoData(user, repoName, `${packageName}-${platform}_${arch}.pkg.zip`, Buffer.from(fs.readFileSync(`${packageName}-${platform}_${arch}.pkg.zip`)))
+              .then(async (asset) => {
+                return await this.pushRepoData(user, repoName, 'repo.json', JSON.stringify(repoDataPatch))
+              })
           })
         })
       })
