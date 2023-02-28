@@ -40,6 +40,8 @@ export class Pakagify {
             console.log(percentCompleted)
           }
         })
+      }).catch(err => {
+        console.error(err)
       })
   }
 
@@ -54,9 +56,9 @@ export class Pakagify {
               asset_id: asset.id
             }).then(async (res) => {
               return res
+            }).catch(err => {
+              console.error(err)
             })
-          } else {
-            throw new Error('Asset not found')
           }
         }
       })
@@ -202,6 +204,24 @@ export class Pakagify {
               })
           })
         })
+      })
+    })
+  }
+
+  async deletePackage (user, repoName, packageName) {
+    return this.getPakRepositoryData(user, repoName).then(repoData => {
+      if (repoData.packages.length === 0) throw new Error('No packages found')
+      return repoData.packages.forEach((value, index, array) => {
+        if (packageName !== value.name) {
+          throw new Error('Package not found')
+        } else {
+          array.splice(index, 1)
+          return this.deleteAsset(user, repoName, 'repo.json').then(() => {
+            return this.deleteAsset(user, repoName, `${packageName}-${value.platform}_${value.arch}.pkg.zip`).then(async () => {
+              return await this.pushRepoData(user, repoName, 'repo.json', JSON.stringify(repoData))
+            })
+          })
+        }
       })
     })
   }

@@ -226,6 +226,7 @@ function mainCommand (argv) {
                 options.platform,
                 options.dirs)
               .then(r => {
+                console.log(`${chalk.bold.greenBright('Successfully')} created package ${chalk.bold.white(userAndName[1])} !`)
                 DEBUG_MODE && console.debug(r)
               })
           } else {
@@ -237,10 +238,9 @@ function mainCommand (argv) {
 
   program.command('delete <type> <name>')
     .description('Delete a repository, package ...')
-    .option('-R, --repository', 'Select the repository for the package to delete')
-    .action((type, name) => {
+    .option('-R, --repository <repository>', 'Select the repository for the package to delete')
+    .action((type, name, options) => {
       const userAndName = name.split('/')
-      const options = program.opts()
 
       if (!configProvider.has('token')) {
         console.error('You need to authenticate first.')
@@ -250,13 +250,13 @@ function mainCommand (argv) {
       processData(decodeToken(configProvider.get('token')))
         .getUser()
         .then(user => {
-          if (type === 'repository') {
-            // Check if no org user specified
-            if (userAndName.length <= 1) {
-              userAndName[0] = user.login
-              userAndName[1] = name
-            }
+          // Check if no org user specified
+          if (userAndName.length <= 1) {
+            userAndName[0] = user.login
+            userAndName[1] = name
+          }
 
+          if (type === 'repository') {
             let latestReleaseTag = processData(decodeToken(configProvider.get('token')))
               .getLatestRelease(userAndName[0], userAndName[1])
               .then(rel => {
@@ -286,8 +286,14 @@ function mainCommand (argv) {
             }
 
             processData(decodeToken(configProvider.get('token')))
-              .deleteRelease(userAndName[0], userAndName[1], true)
+              .deletePackage(userAndName[0], options.repository, userAndName[1])
               .then(res => {
+                console.log(`${chalk.bold.greenBright('Successfully')} deleted package ${chalk.bold.white(userAndName[1])} !`)
+                DEBUG_MODE && console.debug(res)
+              })
+              .catch(err => {
+                console.error(`${chalk.bold.redBright('Error')} while deleting package ${chalk.bold.white(userAndName[1])} !`)
+                DEBUG_MODE && console.debug(err)
               })
           } else {
             console.error('Invalid type.')
