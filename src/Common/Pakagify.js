@@ -1,6 +1,5 @@
 import { Octokit } from 'octokit'
 import { v4 as uuidv4 } from 'uuid'
-import fetch from 'node-fetch'
 import { PackageModel } from './DataModels/PackageModel'
 import { listFilesRecursively } from './Utils'
 import AdmZip from 'adm-zip'
