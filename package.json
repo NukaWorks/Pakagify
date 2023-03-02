@@ -8,7 +8,7 @@
     "dev:pkdash": "vite --host --port 3000",
     "start:electron": "electron .",
     "dev:pkcli": "rm -rf build && mkdir build && esbuild --bundle src/PkCli/Pakagify.cli.js --platform=node --outfile=build/pkcli.js && node build/pkcli.js",
-    "build:pkcli": "rm -rf build && mkdir build && esbuild --minify --bundle src/PkCli/Pakagify.cli.js --platform=node --outfile=dist/pkcli.js",
+    "build:pkcli": "rm -rf build && mkdir build && esbuild --minify --bundle src/PkCli/Pakagify.cli.js --platform=node --outfile=dist/pkcli.js && pkg --compress GZip dist/pkcli.js --out-path dist",
     "build:pkdash": "vite build"
   },
   "dependencies": {
