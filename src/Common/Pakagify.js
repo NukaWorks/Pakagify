@@ -196,12 +196,10 @@ export class Pakagify {
           repoDataPatch.last_updated = new Date().toISOString()
 
           // Upload the asset
-
-          return this.deleteAsset(user, repoName, 'repo.json').then(async () => {
-            return this.pushRepoData(user, repoName, `${packageName}-${platform}_${arch}.pkg.zip`, Buffer.from(fs.readFileSync(`${packageName}-${platform}_${arch}.pkg.zip`)))
-              .then(async (asset) => {
-                return await this.pushRepoData(user, repoName, 'repo.json', JSON.stringify(repoDataPatch))
-              })
+          return this.pushRepoData(user, repoName, `${packageName}-${platform}_${arch}.pkg.zip`, Buffer.from(fs.readFileSync(`${packageName}-${platform}_${arch}.pkg.zip`))).then(res => {
+            return this.deleteAsset(user, repoName, 'repo.json').then(async () => {
+              return await this.pushRepoData(user, repoName, 'repo.json', JSON.stringify(repoDataPatch))
+            })
           })
         })
       })
@@ -216,8 +214,8 @@ export class Pakagify {
           throw new Error('Package not found')
         } else {
           array.splice(index, 1)
-          return this.deleteAsset(user, repoName, 'repo.json').then(() => {
-            return this.deleteAsset(user, repoName, `${packageName}-${value.platform}_${value.arch}.pkg.zip`).then(async () => {
+          return this.deleteAsset(user, repoName, `${packageName}-${value.platform}_${value.arch}.pkg.zip`).then(async () => {
+            return this.deleteAsset(user, repoName, 'repo.json').then(async () => {
               return await this.pushRepoData(user, repoName, 'repo.json', JSON.stringify(repoData))
             })
           })
