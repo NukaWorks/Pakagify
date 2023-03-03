@@ -236,7 +236,7 @@ export class Pakagify {
   async deleteRelease (user, repoName) {
     return this.#octokit.rest.repos.getLatestRelease({ owner: user, repo: repoName })
       .then(async rel => {
-        if (rel.status !== 200) throw new Error(`Unable to delete the repository, maybe it's not exist? (${rel.status})`)
+        if (rel.status !== 200) throw new Error('Unable to delete the repository')
         return await this.#octokit.rest.repos.deleteRelease({
           owner: user,
           repo: repoName,
