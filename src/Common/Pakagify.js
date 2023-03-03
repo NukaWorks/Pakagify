@@ -5,7 +5,6 @@ import { listFilesRecursively } from './Utils'
 import AdmZip from 'adm-zip'
 import { RepoModel } from './DataModels/RepoModel'
 import fs from 'fs'
-import ora from 'ora'
 import Progress from 'progress'
 import axios from 'axios'
 
@@ -35,17 +34,15 @@ export class Pakagify {
         const fileStream = Buffer.from(fileData)
         const fileSize = Buffer.byteLength(fileStream)
 
-        const spinner = ora('Uploading asset...').start()
         const progressBar = new Progress('[:bar] :percent :etas', {
-          total: fileSize,
-          width: 40
+          total: fileSize
         })
 
         const axiosOpts = {
           headers: { Authorization: 'Bearer ' + this.#ghToken, 'Content-Type': 'application/octet-stream', 'Content-Length': fileSize },
           onUploadProgress: (progressEvent) => {
             const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total)
-            progressBar.tick(progressEvent.loaded, { percent: percentCompleted })
+            if (fileSize >= 1000000) progressBar.tick(progressEvent.loaded, { percent: percentCompleted })
           }
         }
 
@@ -55,10 +52,9 @@ export class Pakagify {
             return response.data
           })
           .then(data => {
-            spinner.succeed(`Asset uploaded: ${data.browser_download_url}`)
+            return data
           })
           .catch(error => {
-            spinner.fail(`Error uploading asset: ${error.message}`)
             throw new Error('Error uploading asset: ' + error)
           })
       }).catch(err => {

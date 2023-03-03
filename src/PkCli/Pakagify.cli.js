@@ -3,6 +3,7 @@ import { version } from '../../package.json'
 import { ConfigProvider } from '../Common/ConfigProvider'
 import { Pakagify } from '../Common/Pakagify'
 import chalk from 'chalk'
+import ora from 'ora'
 
 const configProvider = new ConfigProvider()
 let DEBUG_MODE = false
@@ -58,14 +59,15 @@ function mainCommand (argv) {
         process.exit(1)
       }
 
+      const spinner = ora('Authenticating ...').start()
       configProvider.set('token', Buffer.from(token).toString('base64'))
       processData(decodeToken(configProvider.get('token')))
         .getUser()
         .then(user => {
           configProvider.save()
-          console.log(`${chalk.bold.greenBright('Successfully')} authenticated as ${chalk.bold.white(user.login)} !`)
+          spinner.succeed(`${chalk.bold.greenBright('Successfully')} authenticated as ${chalk.bold.white(user.login)} !`)
         }).catch(err => {
-          console.error(`Unable to verify authentication token. Please try to ${chalk.bold.white('logout')} and ${chalk.bold.white('login')} again.`)
+          spinner.fail(`Unable to verify authentication token. Please try to ${chalk.bold.white('logout')} and ${chalk.bold.white('login')} again.`)
           DEBUG_MODE && console.error(err)
           process.exit(1)
         })
@@ -87,12 +89,13 @@ function mainCommand (argv) {
         process.exit(1)
       }
 
+      const spinner = ora('Retrieving user profile...').start()
       processData(decodeToken(configProvider.get('token')))
         .getUser()
         .then(user => {
-          console.log(`You are currently authenticated as ${chalk.bold.white(user.login)} !`)
+          spinner.succeed(`You are currently authenticated as ${chalk.bold.white(user.login)} !`)
         }).catch(err => {
-          console.error(`${chalk.bold.redBright('Error')} Unable to verify authentication token. Please try to ${chalk.bold.white('logout')} and ${chalk.bold.white('login')} again.`)
+          spinner.fail(`${chalk.bold.redBright('Error')} Unable to verify authentication token. Please try to ${chalk.bold.white('logout')} and ${chalk.bold.white('login')} again.`)
           DEBUG_MODE && console.error(err)
           process.exit(1)
         })
@@ -110,6 +113,7 @@ function mainCommand (argv) {
       }
 
       if (type === 'repository') {
+        const spinner = ora('Retrieving repository data...').start()
         processData(decodeToken(configProvider.get('token')))
           .getUser()
           .then(user => {
@@ -122,7 +126,8 @@ function mainCommand (argv) {
             processData(decodeToken(configProvider.get('token')))
               .getPakRepositoryData(userAndName[0], userAndName[1])
               .then(res => {
-                DEBUG_MODE && console.debug(res)
+                spinner.succeed(`Repository ${chalk.bold.white(res.name)} found !`)
+                console.log(res)
               }).catch(err => {
                 console.error(`${chalk.bold.redBright('Error')} while getting repository data: ${err.message} - ${err.status}`)
                 DEBUG_MODE && console.error(err)
@@ -135,6 +140,7 @@ function mainCommand (argv) {
           process.exit(1)
         }
 
+        const spinner = ora('Retrieving package data...').start()
         processData(configProvider.get('token'))
           .getUser()
           .then(user => {
@@ -149,7 +155,8 @@ function mainCommand (argv) {
             processData(decodeToken(configProvider.get('token')))
               .getPackageData(userAndName[0], userAndName[1], name)
               .then(res => {
-                DEBUG_MODE && console.debug(res)
+                spinner.succeed(`Package ${chalk.bold.white(res.name)} found !`)
+                console.log(res)
               }).catch(err => {
                 console.error(`${chalk.bold.redBright('Error')} while getting package data: ${err.message} - ${err.status}`)
                 DEBUG_MODE && console.error(err)
@@ -190,13 +197,14 @@ function mainCommand (argv) {
               userAndName[1] = name
             }
 
+            const spinner = ora('Creating repository...').start()
             processData(decodeToken(configProvider.get('token')))
               .makeRepository(userAndName[0], userAndName[1])
               .then(res => {
-                console.log(`${chalk.bold.greenBright('Successfully')} created repository ${chalk.bold.white(res.repo.name)} !`)
+                spinner.succeed(`${chalk.bold.greenBright('Successfully')} created repository ${chalk.bold.white(res.repo.name)} !`)
                 DEBUG_MODE && console.debug(res)
               }).catch(err => {
-                console.error(`Error while creating repository: ${err.message} - ${err.status}`)
+                spinner.fail(`Error while creating repository: ${err.message} - ${err.status}`)
                 DEBUG_MODE && console.error(err)
                 process.exit(1)
               })
@@ -236,6 +244,7 @@ function mainCommand (argv) {
               }
             }
 
+            const spinner = ora('Creating package...').start()
             processData(decodeToken(configProvider.get('token')))
               .makePackage(
                 userAndName[0],
@@ -248,8 +257,13 @@ function mainCommand (argv) {
                 options.platform,
                 options.dirs)
               .then(r => {
-                console.log(`${chalk.bold.greenBright('Successfully')} created package ${chalk.bold.white(userAndName[1])} !`)
+                spinner.succeed(`${chalk.bold.greenBright('Successfully')} created package ${chalk.bold.white(userAndName[1])} !`)
                 DEBUG_MODE && console.debug(r)
+              })
+              .catch(err => {
+                spinner.fail(`Error while creating package: ${err.message} - ${err.status}`)
+                DEBUG_MODE && console.error(err)
+                process.exit(1)
               })
           } else {
             console.error('Invalid type.')
@@ -285,18 +299,19 @@ function mainCommand (argv) {
                 latestReleaseTag = rel.tag_name
               })
               .catch(err => {
-                console.error(`${chalk.bold.redBright('Error')} while deleting the repository ${name} ${err.message && `(${err.message})`}`)
+                spinner.fail(`${chalk.bold.redBright('Error')} while deleting the repository ${name} ${err.message && `(${err.message})`}`)
                 DEBUG_MODE && console.error(err)
                 process.exit(1)
               })
 
+            const spinner = ora('Deleting repository...').start()
             processData(decodeToken(configProvider.get('token')))
               .deleteRelease(userAndName[0], userAndName[1], true)
               .then(res => {
-                console.log(`${chalk.bold.greenBright('Successfully')} deleted repository ${chalk.bold.white(name)} ${chalk.grey(`(${latestReleaseTag})`)} !`)
+                spinner.succeed(`${chalk.bold.greenBright('Successfully')} deleted repository ${chalk.bold.white(name)} ${chalk.grey(`(${latestReleaseTag})`)} !`)
                 DEBUG_MODE && console.debug(res)
               }).catch(err => {
-                console.error(`${chalk.bold.redBright('Error')} while deleting repository ${chalk.bold.white(name)} - ${chalk.grey(`(${err.status})`)} !`)
+                spinner.fail(`${chalk.bold.redBright('Error')} while deleting repository ${chalk.bold.white(name)} - ${chalk.grey(`(${err.status})`)} !`)
                 DEBUG_MODE && console.debug(err)
                 process.exit(1)
               })
@@ -313,14 +328,15 @@ function mainCommand (argv) {
               }
             }
 
+            const spinner = ora('Deleting package...').start()
             processData(decodeToken(configProvider.get('token')))
               .deletePackage(userAndName[0], options.repository, userAndName[1])
               .then(res => {
-                console.log(`${chalk.bold.greenBright('Successfully')} deleted package ${chalk.bold.white(userAndName[1])} !`)
+                spinner.succeed(`${chalk.bold.greenBright('Successfully')} deleted package ${chalk.bold.white(userAndName[1])} !`)
                 DEBUG_MODE && console.debug(res)
               })
               .catch(err => {
-                console.error(`${chalk.bold.redBright('Error')} while deleting package ${chalk.bold.white(userAndName[1])} !`)
+                spinner.fail(`${chalk.bold.redBright('Error')} while deleting package ${chalk.bold.white(userAndName[1])} !`)
                 DEBUG_MODE && console.debug(err)
               })
           } else {
