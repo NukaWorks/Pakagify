@@ -265,7 +265,7 @@ function mainCommand (argv) {
 
             processData(decodeToken(configProvider.get('token')))
               .on('uploadProgress', (progress, bitrate, time) => {
-                spinner.text = `Uploading package... ${chalk.bold.white(`${progress} %`)} ${chalk.grey(`${formatTime(time)} remaining, ${bitrate}`)}`
+                spinner.text = `Uploading package... ${chalk.grey(`${formatTime(time)} remaining, ${bitrate}`)} ${chalk.bold.white(`${progress} %`)}`
               })
 
             processData(decodeToken(configProvider.get('token')))

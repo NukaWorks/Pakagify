@@ -39,7 +39,7 @@ export class Pakagify extends EventEmitter {
           headers: { Authorization: 'Bearer ' + this.#ghToken, 'Content-Type': 'application/octet-stream', 'Content-Length': fileSize },
           onUploadProgress: (progressEvent) => {
             const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total)
-            const bitrate = calculateBitrate(progressEvent.loaded, progressEvent.estimated / 1000)
+            const bitrate = calculateBitrate(progressEvent.rate, progressEvent.estimated / 1000)
             this.emit('uploadProgress', percentCompleted, bitrate, progressEvent.estimated)
           },
           maxRedirects: 0 // avoid buffering the entire stream

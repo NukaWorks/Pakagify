@@ -22,7 +22,7 @@ function calculateBitrate (bytesDownloaded, downloadTimeSeconds) {
   const bytesPerSecond = bytesDownloaded / downloadTimeSeconds
 
   // Convert bytes per second to megabytes per second
-  const megabytesPerSecond = bytesPerSecond / (1024 * 1024)
+  const megabytesPerSecond = bytesPerSecond / (1024 ** 2)
 
   // Choose the appropriate unit based on the bitrate value
   let unit = 'B/s'
