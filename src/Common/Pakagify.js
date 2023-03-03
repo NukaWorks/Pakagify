@@ -208,8 +208,6 @@ export class Pakagify extends EventEmitter {
       zip.addFile('pak.json', Buffer.from(JSON.stringify(packageModel), 'utf8'), '', null)
 
       return zip.writeZipPromise(`${packageName}-${platform}_${arch}.pkg.zip`, null).then(() => {
-        // TODO Impl optimized code for large upload
-
         // Fetch the repo data
         return this.getPakRepositoryData(user, repoName).then(async (repoData) => {
           // Checks if the package already exists on the repo, if so, delete it (in case of update)
