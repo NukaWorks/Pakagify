@@ -17,6 +17,7 @@ jobs:
       - name: ⚙️ Build
         run: |
           yarn install
+          yarn add -D pkg
           yarn run build:pkcli
           rm dist/pkcli.js
 
