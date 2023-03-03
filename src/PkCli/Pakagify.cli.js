@@ -19,42 +19,45 @@ function decodeToken (token) {
 
 function mainCommand (argv) {
   // Debug mode
-  argv.forEach(arg => {
-    if ((arg.match('-D'))) DEBUG_MODE = true
+  argv.forEach((arg) => {
+    if (arg.match('-D')) DEBUG_MODE = true
   })
 
   program
     .name('pkcli')
-    .description('Pakagify CLI\n             ///////////////////////////////////            \n' +
-      '      /////////////////////////////////////////////////     \n' +
-      '   //////////////////////////////////////////////////////*  \n' +
-      '  ///////////////////////////////////////////////////////// \n' +
-      ' ///////////////////////////////////////////////////////////\n' +
-      '////////////////////////////////////////////////////////////\n' +
-      '////////////////////////////////////////////////////////////\n' +
-      '//////////////////////////////////@@@@@/////////////////////\n' +
-      '////////////@@@@@@@@@@@@@@@@//////@@@@@/////////////////////\n' +
-      '////////////@@@@@//////*@@@@@@////@@@@@/////////////////////\n' +
-      '////////////@@@@@////////*@@@@@///@@@@@/////////////////////\n' +
-      '////////////@@@@@////////@@@@@@///@@@@@/////%@@@@@//////////\n' +
-      '////////////@@@@@@@@@@@@@@@@@@////@@@@@///%@@@@@////////////\n' +
-      '////////////@@@@@@@@@@@@@@@*//////@@@@@/#@@@@@//////////////\n' +
-      '////////////@@@@@/////////////////@@@@@@@@@@@///////////////\n' +
-      '////////////@@@@@/////////////////@@@@@//@@@@@@/////////////\n' +
-      '////////////@@@@@/////////////////@@@@@////@@@@@@///////////\n' +
-      '////////////@@@@@/////////////////@@@@@//////@@@@@@/////////\n' +
-      '////////////////////////////////////////////////////////////\n' +
-      '////////////////////////////////////////////////////////////\n' +
-      ' ///////////////////////////////////////////////////////////\n' +
-      '  ///////////////////////////////////////////////////////// \n' +
-      '   //////////////////////////////////////////////////////.  \n' +
-      '      /////////////////////////////////////////////////     ')
+    .description(
+      'Pakagify CLI\n             ///////////////////////////////////            \n' +
+        '      /////////////////////////////////////////////////     \n' +
+        '   //////////////////////////////////////////////////////*  \n' +
+        '  ///////////////////////////////////////////////////////// \n' +
+        ' ///////////////////////////////////////////////////////////\n' +
+        '////////////////////////////////////////////////////////////\n' +
+        '////////////////////////////////////////////////////////////\n' +
+        '//////////////////////////////////@@@@@/////////////////////\n' +
+        '////////////@@@@@@@@@@@@@@@@//////@@@@@/////////////////////\n' +
+        '////////////@@@@@//////*@@@@@@////@@@@@/////////////////////\n' +
+        '////////////@@@@@////////*@@@@@///@@@@@/////////////////////\n' +
+        '////////////@@@@@////////@@@@@@///@@@@@/////%@@@@@//////////\n' +
+        '////////////@@@@@@@@@@@@@@@@@@////@@@@@///%@@@@@////////////\n' +
+        '////////////@@@@@@@@@@@@@@@*//////@@@@@/#@@@@@//////////////\n' +
+        '////////////@@@@@/////////////////@@@@@@@@@@@///////////////\n' +
+        '////////////@@@@@/////////////////@@@@@//@@@@@@/////////////\n' +
+        '////////////@@@@@/////////////////@@@@@////@@@@@@///////////\n' +
+        '////////////@@@@@/////////////////@@@@@//////@@@@@@/////////\n' +
+        '////////////////////////////////////////////////////////////\n' +
+        '////////////////////////////////////////////////////////////\n' +
+        ' ///////////////////////////////////////////////////////////\n' +
+        '  ///////////////////////////////////////////////////////// \n' +
+        '   //////////////////////////////////////////////////////.  \n' +
+        '      /////////////////////////////////////////////////     '
+    )
     .version(version)
     .option('-D, --debug', 'Debug mode')
 
-  program.command('auth <token>')
+  program
+    .command('auth <token>')
     .description('Authenticate with Github Token.')
-    .action(token => {
+    .action((token) => {
       if (!token) {
         console.error(`${chalk.bold.redBright('Error')} Token is required.`)
         process.exit(1)
@@ -64,17 +67,25 @@ function mainCommand (argv) {
       configProvider.set('token', Buffer.from(token).toString('base64'))
       processData(decodeToken(configProvider.get('token')))
         .getUser()
-        .then(user => {
+        .then((user) => {
           configProvider.save()
-          spinner.succeed(`${chalk.bold.greenBright('Successfully')} authenticated as ${chalk.bold.white(user.login)} !`)
-        }).catch(err => {
-          spinner.fail(`Unable to verify authentication token. Please try to ${chalk.bold.white('logout')} and ${chalk.bold.white('login')} again.`)
+          spinner.succeed(
+            `${chalk.bold.greenBright('Successfully')} authenticated as ${chalk.bold.white(user.login)} !`
+          )
+        })
+        .catch((err) => {
+          spinner.fail(
+            `Unable to verify authentication token. Please try to ${chalk.bold.white('logout')} and ${chalk.bold.white(
+              'login'
+            )} again.`
+          )
           DEBUG_MODE && console.error(err)
           process.exit(1)
         })
     })
 
-  program.command('logout')
+  program
+    .command('logout')
     .description('Logout from Pakagify CLI.')
     .action(() => {
       configProvider.remove('token')
@@ -82,7 +93,8 @@ function mainCommand (argv) {
       console.log('Successfully logged out.')
     })
 
-  program.command('whoami')
+  program
+    .command('whoami')
     .description('Get the current authenticated user.')
     .action(() => {
       if (!configProvider.has('token')) {
@@ -93,16 +105,22 @@ function mainCommand (argv) {
       const spinner = ora('Retrieving user profile...').start()
       processData(decodeToken(configProvider.get('token')))
         .getUser()
-        .then(user => {
+        .then((user) => {
           spinner.succeed(`You are currently authenticated as ${chalk.bold.white(user.login)} !`)
-        }).catch(err => {
-          spinner.fail(`${chalk.bold.redBright('Error')} Unable to verify authentication token. Please try to ${chalk.bold.white('logout')} and ${chalk.bold.white('login')} again.`)
+        })
+        .catch((err) => {
+          spinner.fail(
+            `${chalk.bold.redBright('Error')} Unable to verify authentication token. Please try to ${chalk.bold.white(
+              'logout'
+            )} and ${chalk.bold.white('login')} again.`
+          )
           DEBUG_MODE && console.error(err)
           process.exit(1)
         })
     })
 
-  program.command('info <type> <name>')
+  program
+    .command('info <type> <name>')
     .description('Get info about a repository, package...')
     .option('-R, --repository <repository>', 'Select the repository for the package')
     .action((type, name, options) => {
@@ -117,7 +135,7 @@ function mainCommand (argv) {
         const spinner = ora('Retrieving repository data...').start()
         processData(decodeToken(configProvider.get('token')))
           .getUser()
-          .then(user => {
+          .then((user) => {
             // Check if no org user specified
             if (userAndName.length <= 1) {
               userAndName[0] = user.login
@@ -126,10 +144,11 @@ function mainCommand (argv) {
 
             processData(decodeToken(configProvider.get('token')))
               .getPakRepositoryData(userAndName[0], userAndName[1])
-              .then(res => {
+              .then((res) => {
                 spinner.succeed(`Repository ${chalk.bold.white(res.name)} found !`)
                 console.log(res)
-              }).catch(err => {
+              })
+              .catch((err) => {
                 console.error(`${chalk.bold.redBright('Error')} while getting repository data: ${err.message}`)
                 DEBUG_MODE && console.error(err)
                 process.exit(1)
@@ -144,7 +163,7 @@ function mainCommand (argv) {
         const spinner = ora('Retrieving package data...').start()
         processData(configProvider.get('token'))
           .getUser()
-          .then(user => {
+          .then((user) => {
             userAndName = options.repository.split('/')
 
             // Check if no org user specified
@@ -155,10 +174,11 @@ function mainCommand (argv) {
 
             processData(decodeToken(configProvider.get('token')))
               .getPackageData(userAndName[0], userAndName[1], name)
-              .then(res => {
+              .then((res) => {
                 spinner.succeed(`Package ${chalk.bold.white(res.name)} found !`)
                 console.log(res)
-              }).catch(err => {
+              })
+              .catch((err) => {
                 console.error(`${chalk.bold.redBright('Error')} while getting package data: ${err.message}`)
                 DEBUG_MODE && console.error(err)
                 process.exit(1)
@@ -167,7 +187,8 @@ function mainCommand (argv) {
       }
     })
 
-  program.command('create <type> <name>')
+  program
+    .command('create <type> <name>')
     .description('Create a repository, package ...')
     .option('-v, --version <version>', 'Version of the package')
     .option('-a, --arch <arch>', 'Architecture of the package')
@@ -190,7 +211,7 @@ function mainCommand (argv) {
 
       processData(decodeToken(configProvider.get('token')))
         .getUser()
-        .then(user => {
+        .then((user) => {
           if (type === 'repository') {
             // Check if no org user specified
             if (userAndName.length <= 1) {
@@ -201,10 +222,13 @@ function mainCommand (argv) {
             const spinner = ora('Creating repository...').start()
             processData(decodeToken(configProvider.get('token')))
               .makeRepository(userAndName[0], userAndName[1])
-              .then(res => {
-                spinner.succeed(`${chalk.bold.greenBright('Successfully')} created repository ${chalk.bold.white(res.repo.name)} !`)
+              .then((res) => {
+                spinner.succeed(
+                  `${chalk.bold.greenBright('Successfully')} created repository ${chalk.bold.white(res.repo.name)} !`
+                )
                 DEBUG_MODE && console.debug(res)
-              }).catch(err => {
+              })
+              .catch((err) => {
                 spinner.fail(`Error while creating repository: ${err.message}`)
                 DEBUG_MODE && console.error(err)
                 process.exit(1)
@@ -246,27 +270,35 @@ function mainCommand (argv) {
             }
 
             // Check if platform is valid
-            if (options.platform !== 'linux' && options.platform !== 'windows' && options.platform !== 'macos' && options.platform !== 'any') {
+            if (
+              options.platform !== 'linux' &&
+              options.platform !== 'windows' &&
+              options.platform !== 'darwin' &&
+              options.platform !== 'any'
+            ) {
               console.error(`${chalk.bold.redBright('Error')} Invalid platform.`)
               return process.exit(1)
             }
 
             // Check if arch is valid
-            if (options.arch !== 'x86' &&
+            if (
+              options.arch !== 'x86' &&
               options.arch !== 'x64' &&
               options.arch !== 'armv7' &&
               options.arch !== 'arm64' &&
-              options.arch !== 'noarch') {
+              options.arch !== 'noarch'
+            ) {
               console.error(`${chalk.bold.redBright('Error')} Invalid architecture.`)
               return process.exit(1)
             }
 
             const spinner = ora('Creating package...').start()
 
-            processData(decodeToken(configProvider.get('token')))
-              .on('uploadProgress', (progress, bitrate, time) => {
-                spinner.text = `Uploading package... ${chalk.grey(`${formatTime(time)} remaining, ${bitrate}`)} ${chalk.bold.white(`${progress} %`)}`
-              })
+            processData(decodeToken(configProvider.get('token'))).on('uploadProgress', (progress, bitrate, time) => {
+              spinner.text = `Uploading package... ${chalk.grey(
+                `${formatTime(time)} remaining, ${bitrate}`
+              )} ${chalk.bold.white(`${progress} %`)}`
+            })
 
             processData(decodeToken(configProvider.get('token')))
               .makePackage(
@@ -278,12 +310,17 @@ function mainCommand (argv) {
                 options.installLocation,
                 options.arch,
                 options.platform,
-                options.dirs)
-              .then(r => {
-                spinner.succeed(`${chalk.bold.greenBright('Successfully')} created package ${chalk.bold.white(name)} ${chalk.grey(`(${options.version}, ${options.arch}, ${options.platform})`)} !`)
+                options.dirs
+              )
+              .then((r) => {
+                spinner.succeed(
+                  `${chalk.bold.greenBright('Successfully')} created package ${chalk.bold.white(name)} ${chalk.grey(
+                    `(${options.version}, ${options.arch}, ${options.platform})`
+                  )} !`
+                )
                 DEBUG_MODE && console.debug(r)
               })
-              .catch(err => {
+              .catch((err) => {
                 spinner.fail(`Error while creating package: ${err.message}`)
                 DEBUG_MODE && console.error(err)
                 process.exit(1)
@@ -295,7 +332,8 @@ function mainCommand (argv) {
         })
     })
 
-  program.command('delete <type> <name>')
+  program
+    .command('delete <type> <name>')
     .description('Delete a repository, package ...')
     .option('-R, --repository <repository>', 'Select the repository for the package to delete')
     .action((type, name, options) => {
@@ -308,7 +346,7 @@ function mainCommand (argv) {
 
       processData(decodeToken(configProvider.get('token')))
         .getUser()
-        .then(user => {
+        .then((user) => {
           // Check if no org user specified
           if (userAndName.length <= 1) {
             userAndName[0] = user.login
@@ -318,11 +356,15 @@ function mainCommand (argv) {
           if (type === 'repository') {
             let latestReleaseTag = processData(decodeToken(configProvider.get('token')))
               .getLatestRelease(userAndName[0], userAndName[1])
-              .then(rel => {
+              .then((rel) => {
                 latestReleaseTag = rel.tag_name
               })
-              .catch(err => {
-                spinner.fail(`${chalk.bold.redBright('Error')} while deleting the repository ${name} ${err.message && `(${err.message})`}`)
+              .catch((err) => {
+                spinner.fail(
+                  `${chalk.bold.redBright('Error')} while deleting the repository ${name} ${
+                    err.message && `(${err.message})`
+                  }`
+                )
                 DEBUG_MODE && console.error(err)
                 process.exit(1)
               })
@@ -330,11 +372,20 @@ function mainCommand (argv) {
             const spinner = ora('Deleting repository...').start()
             processData(decodeToken(configProvider.get('token')))
               .deleteRelease(userAndName[0], userAndName[1], true)
-              .then(res => {
-                spinner.succeed(`${chalk.bold.greenBright('Successfully')} deleted repository ${chalk.bold.white(name)} ${chalk.grey(`(${latestReleaseTag})`)} !`)
+              .then((res) => {
+                spinner.succeed(
+                  `${chalk.bold.greenBright('Successfully')} deleted repository ${chalk.bold.white(name)} ${chalk.grey(
+                    `(${latestReleaseTag})`
+                  )} !`
+                )
                 DEBUG_MODE && console.debug(res)
-              }).catch(err => {
-                spinner.fail(`${chalk.bold.redBright('Error')} while deleting repository ${chalk.bold.white(name)} - ${chalk.grey(`(${err.status})`)} !`)
+              })
+              .catch((err) => {
+                spinner.fail(
+                  `${chalk.bold.redBright('Error')} while deleting repository ${chalk.bold.white(name)} - ${chalk.grey(
+                    `(${err.status})`
+                  )} !`
+                )
                 DEBUG_MODE && console.debug(err)
                 process.exit(1)
               })
@@ -362,12 +413,16 @@ function mainCommand (argv) {
             const spinner = ora('Deleting package...').start()
             processData(decodeToken(configProvider.get('token')))
               .deletePackage(userAndName[0], userAndName[1], name)
-              .then(res => {
-                spinner.succeed(`${chalk.bold.greenBright('Successfully')} deleted package ${chalk.bold.white(userAndName[1])} !`)
+              .then((res) => {
+                spinner.succeed(
+                  `${chalk.bold.greenBright('Successfully')} deleted package ${chalk.bold.white(userAndName[1])} !`
+                )
                 DEBUG_MODE && console.debug(res)
               })
-              .catch(err => {
-                spinner.fail(`${chalk.bold.redBright('Error')} while deleting package ${chalk.bold.white(userAndName[1])} !`)
+              .catch((err) => {
+                spinner.fail(
+                  `${chalk.bold.redBright('Error')} while deleting package ${chalk.bold.white(userAndName[1])} !`
+                )
                 DEBUG_MODE && console.debug(err)
               })
           } else {
