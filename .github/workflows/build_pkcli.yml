@@ -2,11 +2,7 @@ name: Build PkCli
 permissions:
   contents: write
 
-on:
-  create:
-    tags:
-      - "*"
-  workflow_dispatch:
+on: push
 
 jobs:
   build:
@@ -50,3 +46,5 @@ jobs:
           token: ${{ secrets.GH_TOKEN }}
           files: |
             ./**/*
+          env:
+          GITHUB_REPOSITORY: NukaWorks/Pakagify
