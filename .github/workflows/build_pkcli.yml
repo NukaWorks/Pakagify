@@ -2,7 +2,13 @@ name: Build PkCli
 permissions:
   contents: write
 
-on: push
+on:
+  push:
+    branches:
+      - 'master'
+      - 'prod'
+    tags:
+        - '*'
 
 jobs:
   build:
