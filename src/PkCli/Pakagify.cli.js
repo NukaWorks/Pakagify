@@ -4,6 +4,7 @@ import { ConfigProvider } from '../Common/ConfigProvider'
 import { Pakagify } from '../Common/Pakagify'
 import chalk from 'chalk'
 import ora from 'ora'
+import { formatTime } from '../Common/Utils'
 
 const configProvider = new ConfigProvider()
 let DEBUG_MODE = false
@@ -261,6 +262,12 @@ function mainCommand (argv) {
             }
 
             const spinner = ora('Creating package...').start()
+
+            processData(decodeToken(configProvider.get('token')))
+              .on('uploadProgress', (progress, bitrate, time) => {
+                spinner.text = `Uploading package... ${chalk.bold.white(`${progress} %`)} ${chalk.grey(`${formatTime(time)} remaining, ${bitrate}`)}`
+              })
+
             processData(decodeToken(configProvider.get('token')))
               .makePackage(
                 userAndName[0],
