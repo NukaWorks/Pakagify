@@ -66,7 +66,11 @@ export class Pakagify {
   async getGitRepositoryData (user, repoName) {
     return this.#octokit.rest.repos.get({ owner: user, repo: repoName })
       .then(async ({ data }) => {
+        if (data.status === 404) throw new Error(`Repository ${repoName} not found for user ${user}`)
         return data
+      })
+      .catch(err => {
+        throw new Error(`Error fetching the repo data (${err.message}): ERR_CODE: ${err.status}`)
       })
   }
 
@@ -79,6 +83,9 @@ export class Pakagify {
             return await fetch(`https://api.github.com/repos/${user}/${repoName}/releases/assets/${asset.id}`, {
               headers: { Authorization: 'Bearer ' + this.#ghToken, Accept: 'application/octet-stream' }
             }).then(res => res.json())
+              .catch(err => {
+                throw new Error(`Error fetching the repo.json file (${err.message}): ERR_CODE: ${err.status}`)
+              })
           }
         }
       })
@@ -89,7 +96,7 @@ export class Pakagify {
       repo.packages.forEach(pkg => {
         if (pkg.name === packageName) {
           return pkg
-        } else throw new Error('Package not found')
+        } else throw new Error(`Package not found (${packageName})`)
       })
     })
   }
@@ -161,7 +168,7 @@ export class Pakagify {
 
     return await this.getLatestRelease(user, repoName).then(async (release) => {
       for (const asset in release.assets) {
-        if (asset.name === packageName) throw new Error('Package already exists')
+        if (asset.name === packageName) throw new Error(`Package already exists (${packageName})`)
       }
       packageModel.release_url = release.html_url
 
@@ -195,11 +202,14 @@ export class Pakagify {
           repoDataPatch.last_updated = new Date().toISOString()
 
           // Upload the asset
-          return this.pushRepoData(user, repoName, `${packageName}-${platform}_${arch}.pkg.zip`, Buffer.from(fs.readFileSync(`${packageName}-${platform}_${arch}.pkg.zip`))).then(res => {
-            return this.deleteAsset(user, repoName, 'repo.json').then(async () => {
-              return await this.pushRepoData(user, repoName, 'repo.json', JSON.stringify(repoDataPatch))
+          return this.pushRepoData(user, repoName,
+            `${packageName}-${platform}_${arch}.pkg.zip`, Buffer.from(fs.readFileSync(`${packageName}-${platform}_${arch}.pkg.zip`)))
+            .then(res => {
+              if (res.status !== 201) throw new Error(`Error uploading the package (${packageName})`)
+              return this.deleteAsset(user, repoName, 'repo.json').then(async () => {
+                return await this.pushRepoData(user, repoName, 'repo.json', JSON.stringify(repoDataPatch))
+              })
             })
-          })
         })
       })
     })
@@ -226,18 +236,26 @@ export class Pakagify {
   async deleteRelease (user, repoName) {
     return this.#octokit.rest.repos.getLatestRelease({ owner: user, repo: repoName })
       .then(async rel => {
+        if (rel.status !== 200) throw new Error(`Unable to delete the repository, maybe it's not exist? (${rel.status})`)
         return await this.#octokit.rest.repos.deleteRelease({
           owner: user,
           repo: repoName,
           release_id: rel.data.id
         })
       })
+      .catch(err => {
+        throw new Error(`Unable to delete the repository, maybe it's not exist? (${err.message}): ERR_CODE: ${err.status}`)
+      })
   }
 
   async getLatestRelease (user, repoName) {
     return await this.#octokit.rest.repos.getLatestRelease({ owner: user, repo: repoName })
-      .then(({ data }) => {
-        return data
+      .then((rel) => {
+        if (rel.status !== 200) throw new Error(`Unable to get the latest release, maybe it's not exist? (${rel.status})`)
+        return rel.data
+      })
+      .catch(err => {
+        throw new Error(`Unable to get the latest release, maybe it's not exist? (${err.message}): ERR_CODE: ${err.status}`)
       })
   }
 
