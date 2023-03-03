@@ -271,10 +271,10 @@ function mainCommand (argv) {
 
             // Check if platform is valid
             if (
-              options.platform !== 'linux' &&
-              options.platform !== 'windows' &&
-              options.platform !== 'darwin' &&
-              options.platform !== 'any'
+              options.platform === 'linux' &&
+              options.platform === 'windows' &&
+              options.platform === 'darwin' &&
+              options.platform === 'any'
             ) {
               console.error(`${chalk.bold.redBright('Error')} Invalid platform.`)
               return process.exit(1)
