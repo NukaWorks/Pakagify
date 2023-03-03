@@ -32,19 +32,16 @@ export class Pakagify {
   async pushRepoData (user, repoName, fileName, fileData) {
     return this.#octokit.rest.repos.getLatestRelease({ owner: user, repo: repoName })
       .then(async ({ data }) => {
-        console.log(data)
         const url = `https://uploads.github.com/repos/${user}/${repoName}/releases/${data.id}/assets?name=${fileName}`
-        console.log(url)
         const fileStream = Buffer.from(fileData)
         const fileSize = Buffer.byteLength(fileStream)
-        console.log('File size: ' + fileSize)
-        console.log('File stream: ' + fileStream)
+
         const spinner = ora('Uploading asset...').start()
         const progressBar = new Progress('[:bar] :percent :etas', {
           total: fileSize,
           width: 40
         })
-        //
+
         // fileStream.on('data', chunk => {
         //   progressBar.tick(chunk.length, { percent: ((progressBar.curr / fileSize) * 100).toFixed(2) })
         // })
@@ -55,18 +52,14 @@ export class Pakagify {
 
         return await axios.post(url, fileStream, options)
           .then(response => {
-            if (response.status !== 201) {
-              console.log(response)
-              throw new Error(response.statusText)
-            }
+            if (response.status !== 201) throw new Error(response.statusText)
             return response.data
           })
           .then(data => {
             spinner.succeed(`Asset uploaded: ${data.browser_download_url}`)
           })
           .catch(error => {
-            spinner.fail(`Error uploading asset: ${error}`)
-            console.error(error)
+            spinner.fail(`Error uploading asset: ${error.message}`)
             throw new Error('Error uploading asset: ' + error)
           })
 
