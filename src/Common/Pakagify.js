@@ -145,7 +145,6 @@ export class Pakagify {
               isDebug && console.debug(push)
 
               // Group the data
-              console.log(push)
               push.asset = push.data
               delete push.data
               push.release = rel
