@@ -7,7 +7,6 @@ import { RepoModel } from './DataModels/RepoModel'
 import fs from 'fs'
 import ora from 'ora'
 import Progress from 'progress'
-import fetch from 'isomorphic-fetch'
 import axios from 'axios'
 
 export class Pakagify {
@@ -42,15 +41,15 @@ export class Pakagify {
           width: 40
         })
 
-        // fileStream.on('data', chunk => {
-        //   progressBar.tick(chunk.length, { percent: ((progressBar.curr / fileSize) * 100).toFixed(2) })
-        // })
-
-        const options = {
-          headers: { Authorization: 'Bearer ' + this.#ghToken, 'Content-Type': 'application/octet-stream', 'Content-Length': fileSize }
+        const axiosOpts = {
+          headers: { Authorization: 'Bearer ' + this.#ghToken, 'Content-Type': 'application/octet-stream', 'Content-Length': fileSize },
+          onUploadProgress: (progressEvent) => {
+            const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total)
+            progressBar.tick(progressEvent.loaded, { percent: percentCompleted })
+          }
         }
 
-        return await axios.post(url, fileStream, options)
+        return await axios.post(url, fileStream, axiosOpts)
           .then(response => {
             if (response.status !== 201) throw new Error(response.statusText)
             return response.data
@@ -62,18 +61,6 @@ export class Pakagify {
             spinner.fail(`Error uploading asset: ${error.message}`)
             throw new Error('Error uploading asset: ' + error)
           })
-
-        // return await this.#octokit.rest.repos.uploadReleaseAsset({
-        //   owner: user,
-        //   repo: repoName,
-        //   release_id: data.id,
-        //   name: fileName,
-        //   data: fileData,
-        //   onUploadProgress: (progressEvent) => {
-        //     const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total)
-        //     console.log(percentCompleted)
-        //   }
-        // })
       }).catch(err => {
         console.error(err)
       })
@@ -110,14 +97,17 @@ export class Pakagify {
   }
 
   async getPakRepositoryData (user, repoName) {
+    const axiosOpts = {
+      headers: { Authorization: 'Bearer ' + this.#ghToken }
+    }
+
     return this.getLatestRelease(user, repoName)
       .then(async rel => {
         for (const asset of rel.assets) {
           if (asset.name === 'repo.json') {
           // Get the asset data
-            return await fetch(`https://api.github.com/repos/${user}/${repoName}/releases/assets/${asset.id}`, {
-              headers: { Authorization: 'Bearer ' + this.#ghToken, Accept: 'application/octet-stream' }
-            }).then(res => res.json())
+            return await axios.get(`https://api.github.com/repos/${user}/${repoName}/releases/assets/${asset.id}`, axiosOpts)
+              .then(res => res.data)
               .catch(err => {
                 throw new Error(`Error fetching the repo.json file (${err.message}): ERR_CODE: ${err.status}`)
               })
