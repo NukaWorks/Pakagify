@@ -285,7 +285,7 @@ function mainCommand (argv) {
                 latestReleaseTag = rel.tag_name
               })
               .catch(err => {
-                console.error(`${chalk.bold.redBright('Error')} while getting latest release tag: ${err.message} - ${err.status}`)
+                console.error(`${chalk.bold.redBright('Error')} while deleting the repository ${name} ${err.message && `(${err.message})`}`)
                 DEBUG_MODE && console.error(err)
                 process.exit(1)
               })

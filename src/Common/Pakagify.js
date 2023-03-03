@@ -251,7 +251,7 @@ export class Pakagify {
   async getLatestRelease (user, repoName) {
     return await this.#octokit.rest.repos.getLatestRelease({ owner: user, repo: repoName })
       .then((rel) => {
-        if (rel.status !== 200) throw new Error(`Unable to get the latest release, maybe it's not exist? (${rel.status})`)
+        if (rel.status !== 200) throw new Error('Release not found')
         return rel.data
       })
       .catch(err => {
