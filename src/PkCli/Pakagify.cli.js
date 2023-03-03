@@ -54,7 +54,7 @@ function mainCommand (argv) {
     .description('Authenticate with Github Token.')
     .action(token => {
       if (!token) {
-        console.error('Token is required.')
+        console.error(`${chalk.bold.redBright('Error')} Token is required.`)
         process.exit(1)
       }
 
@@ -83,7 +83,7 @@ function mainCommand (argv) {
     .description('Get the current authenticated user.')
     .action(() => {
       if (!configProvider.has('token')) {
-        console.error('You need to authenticate first.')
+        console.error(`${chalk.bold.redBright('Error')} You need to authenticate first.`)
         process.exit(1)
       }
 
@@ -92,7 +92,7 @@ function mainCommand (argv) {
         .then(user => {
           console.log(`You are currently authenticated as ${chalk.bold.white(user.login)} !`)
         }).catch(err => {
-          console.error(`Unable to verify authentication token. Please try to ${chalk.bold.white('logout')} and ${chalk.bold.white('login')} again.`)
+          console.error(`${chalk.bold.redBright('Error')} Unable to verify authentication token. Please try to ${chalk.bold.white('logout')} and ${chalk.bold.white('login')} again.`)
           DEBUG_MODE && console.error(err)
           process.exit(1)
         })
@@ -105,7 +105,7 @@ function mainCommand (argv) {
       let userAndName = name.split('/')
 
       if (!configProvider.has('token')) {
-        console.error('You need to authenticate first.')
+        console.error(`${chalk.bold.redBright('Error')} You need to authenticate first.`)
         process.exit(1)
       }
 
@@ -124,13 +124,14 @@ function mainCommand (argv) {
               .then(res => {
                 DEBUG_MODE && console.debug(res)
               }).catch(err => {
-                console.error(err)
+                console.error(`${chalk.bold.redBright('Error')} while getting repository data: ${err.message} - ${err.status}`)
+                DEBUG_MODE && console.error(err)
                 process.exit(1)
               })
           })
       } else {
         if (!options.repository) {
-          console.error('You need to specify the repository.')
+          console.error(`${chalk.bold.redBright('Error')} You need to specify the repository.`)
           process.exit(1)
         }
 
@@ -150,7 +151,7 @@ function mainCommand (argv) {
               .then(res => {
                 DEBUG_MODE && console.debug(res)
               }).catch(err => {
-                console.error(`Error while getting package data: ${err.message} - ${err.status}`)
+                console.error(`${chalk.bold.redBright('Error')} while getting package data: ${err.message} - ${err.status}`)
                 DEBUG_MODE && console.error(err)
                 process.exit(1)
               })
@@ -175,7 +176,7 @@ function mainCommand (argv) {
       let userAndName = name.split('/')
 
       if (!configProvider.has('token')) {
-        console.error('You need to authenticate first.')
+        console.error(`${chalk.bold.redBright('Error')} You need to authenticate first.`)
         process.exit(1)
       }
 
@@ -195,7 +196,8 @@ function mainCommand (argv) {
                 console.log(`${chalk.bold.greenBright('Successfully')} created repository ${chalk.bold.white(res.repo.name)} !`)
                 DEBUG_MODE && console.debug(res)
               }).catch(err => {
-                console.error(err)
+                console.error(`Error while creating repository: ${err.message} - ${err.status}`)
+                DEBUG_MODE && console.error(err)
                 process.exit(1)
               })
           } else if (type === 'package') {
@@ -209,27 +211,27 @@ function mainCommand (argv) {
 
             switch (!options) {
               case options.repository: {
-                console.error('You need to specify the repository.')
+                console.error(`${chalk.bold.redBright('Error')} You need to specify the repository.`)
                 return process.exit(1)
               }
 
               case options.version: {
-                console.error('You need to specify the version.')
+                console.error(`${chalk.bold.redBright('Error')} You need to specify the version.`)
                 return process.exit(1)
               }
 
               case options.arch: {
-                console.error('You need to specify the architecture.')
+                console.error(`${chalk.bold.redBright('Error')} You need to specify the architecture.`)
                 return process.exit(1)
               }
 
               case options.platform: {
-                console.error('You need to specify the platform.')
+                console.error(`${chalk.bold.redBright('Error')} You need to specify the platform.`)
                 return process.exit(1)
               }
 
               case options.installLocation: {
-                console.error('You need to specify the install location.')
+                console.error(`${chalk.bold.redBright('Error')} You need to specify the install location.`)
                 return process.exit(1)
               }
             }
@@ -263,7 +265,7 @@ function mainCommand (argv) {
       const userAndName = name.split('/')
 
       if (!configProvider.has('token')) {
-        console.error('You need to authenticate first.')
+        console.error(`${chalk.bold.redBright('Error')} You need to authenticate first.`)
         process.exit(1)
       }
 
@@ -282,6 +284,11 @@ function mainCommand (argv) {
               .then(rel => {
                 latestReleaseTag = rel.tag_name
               })
+              .catch(err => {
+                console.error(`${chalk.bold.redBright('Error')} while getting latest release tag: ${err.message} - ${err.status}`)
+                DEBUG_MODE && console.error(err)
+                process.exit(1)
+              })
 
             processData(decodeToken(configProvider.get('token')))
               .deleteRelease(userAndName[0], userAndName[1], true)
@@ -289,19 +296,19 @@ function mainCommand (argv) {
                 console.log(`${chalk.bold.greenBright('Successfully')} deleted repository ${chalk.bold.white(name)} ${chalk.grey(`(${latestReleaseTag})`)} !`)
                 DEBUG_MODE && console.debug(res)
               }).catch(err => {
-                console.error(`${chalk.bold.redBright('Error')} while deleting repository ${chalk.bold.white(name)} ${chalk.grey(`(${latestReleaseTag})`)} !`)
+                console.error(`${chalk.bold.redBright('Error')} while deleting repository ${chalk.bold.white(name)} - ${chalk.grey(`(${err.status})`)} !`)
                 DEBUG_MODE && console.debug(err)
                 process.exit(1)
               })
           } else if (type === 'package') {
             if (!configProvider.has('token')) {
-              console.error('You need to authenticate first.')
+              console.error(`${chalk.bold.redBright('Error')} You need to authenticate first.`)
               process.exit(1)
             }
 
             switch (!options) {
               case options.repository: {
-                console.error('You need to specify the repository.')
+                console.error(`${chalk.bold.redBright('Error')} You need to specify the repository.`)
                 return process.exit(1)
               }
             }
