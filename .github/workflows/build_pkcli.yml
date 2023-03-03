@@ -10,6 +10,7 @@ on:
 
 jobs:
   build:
+    environment: prod
     name: 🛠 Build
     runs-on: ubuntu-latest
     steps:
