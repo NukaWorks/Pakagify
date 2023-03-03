@@ -271,10 +271,10 @@ function mainCommand (argv) {
 
             // Check if platform is valid
             if (
-              options.platform === 'linux' &&
-              options.platform === 'windows' &&
-              options.platform === 'darwin' &&
-              options.platform === 'any'
+              options.platform !== 'linux' &&
+              options.platform !== 'windows' &&
+              options.platform !== 'darwin' &&
+              options.platform !== 'any'
             ) {
               console.error(`${chalk.bold.redBright('Error')} Invalid platform.`)
               return process.exit(1)
@@ -282,11 +282,11 @@ function mainCommand (argv) {
 
             // Check if arch is valid
             if (
-              options.arch === 'x86' &&
-              options.arch === 'x64' &&
-              options.arch === 'armv7' &&
-              options.arch === 'arm64' &&
-              options.arch === 'noarch'
+              options.arch !== 'x86' &&
+              options.arch !== 'x64' &&
+              options.arch !== 'armv7' &&
+              options.arch !== 'arm64' &&
+              options.arch !== 'noarch'
             ) {
               console.error(`${chalk.bold.redBright('Error')} Invalid architecture.`)
               return process.exit(1)
