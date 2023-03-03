@@ -5,6 +5,10 @@ import { listFilesRecursively } from './Utils'
 import AdmZip from 'adm-zip'
 import { RepoModel } from './DataModels/RepoModel'
 import fs from 'fs'
+import ora from 'ora'
+import Progress from 'progress'
+import fetch from 'isomorphic-fetch'
+import axios from 'axios'
 
 export class Pakagify {
   #ghToken = ''
@@ -28,17 +32,55 @@ export class Pakagify {
   async pushRepoData (user, repoName, fileName, fileData) {
     return this.#octokit.rest.repos.getLatestRelease({ owner: user, repo: repoName })
       .then(async ({ data }) => {
-        return await this.#octokit.rest.repos.uploadReleaseAsset({
-          owner: user,
-          repo: repoName,
-          release_id: data.id,
-          name: fileName,
-          data: fileData,
-          onUploadProgress: (progressEvent) => {
-            const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total)
-            console.log(percentCompleted)
-          }
+        console.log(data)
+        const url = `https://uploads.github.com/repos/${user}/${repoName}/releases/${data.id}/assets?name=${fileName}`
+        console.log(url)
+        const fileStream = Buffer.from(fileData)
+        const fileSize = Buffer.byteLength(fileStream)
+        console.log('File size: ' + fileSize)
+        console.log('File stream: ' + fileStream)
+        const spinner = ora('Uploading asset...').start()
+        const progressBar = new Progress('[:bar] :percent :etas', {
+          total: fileSize,
+          width: 40
         })
+        //
+        // fileStream.on('data', chunk => {
+        //   progressBar.tick(chunk.length, { percent: ((progressBar.curr / fileSize) * 100).toFixed(2) })
+        // })
+
+        const options = {
+          headers: { Authorization: 'Bearer ' + this.#ghToken, 'Content-Type': 'application/octet-stream', 'Content-Length': fileSize }
+        }
+
+        return await axios.post(url, fileStream, options)
+          .then(response => {
+            if (response.status !== 201) {
+              console.log(response)
+              throw new Error(response.statusText)
+            }
+            return response.data
+          })
+          .then(data => {
+            spinner.succeed(`Asset uploaded: ${data.browser_download_url}`)
+          })
+          .catch(error => {
+            spinner.fail(`Error uploading asset: ${error}`)
+            console.error(error)
+            throw new Error('Error uploading asset: ' + error)
+          })
+
+        // return await this.#octokit.rest.repos.uploadReleaseAsset({
+        //   owner: user,
+        //   repo: repoName,
+        //   release_id: data.id,
+        //   name: fileName,
+        //   data: fileData,
+        //   onUploadProgress: (progressEvent) => {
+        //     const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total)
+        //     console.log(percentCompleted)
+        //   }
+        // })
       }).catch(err => {
         console.error(err)
       })
@@ -124,6 +166,7 @@ export class Pakagify {
               isDebug && console.debug(push)
 
               // Group the data
+              console.log(push)
               push.asset = push.data
               delete push.data
               push.release = rel
