@@ -1,20 +1,21 @@
 import { Octokit } from 'octokit'
 import { v4 as uuidv4 } from 'uuid'
 import { PackageModel } from './DataModels/PackageModel'
-import { listFilesRecursively } from './Utils'
+import { calculateBitrate, listFilesRecursively } from './Utils'
 import AdmZip from 'adm-zip'
 import { RepoModel } from './DataModels/RepoModel'
 import fs from 'fs'
-import Progress from 'progress'
 import axios from 'axios'
+import { EventEmitter } from 'events'
 
-export class Pakagify {
+export class Pakagify extends EventEmitter {
   #ghToken = ''
   #user = null
   #reposData = new Map()
   #octokit = null
 
   constructor (token) {
+    super()
     this.#ghToken = token
     this.#octokit = new Octokit({ auth: token })
   }
@@ -34,16 +35,14 @@ export class Pakagify {
         const fileStream = Buffer.from(fileData)
         const fileSize = Buffer.byteLength(fileStream)
 
-        const progressBar = new Progress('[:bar] :percent :etas', {
-          total: fileSize
-        })
-
         const axiosOpts = {
           headers: { Authorization: 'Bearer ' + this.#ghToken, 'Content-Type': 'application/octet-stream', 'Content-Length': fileSize },
           onUploadProgress: (progressEvent) => {
             const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total)
-            if (fileSize >= 1000000) progressBar.tick(progressEvent.loaded, { percent: percentCompleted })
-          }
+            const bitrate = calculateBitrate(progressEvent.loaded, progressEvent.estimated / 1000)
+            this.emit('uploadProgress', percentCompleted, bitrate, progressEvent.estimated)
+          },
+          maxRedirects: 0 // avoid buffering the entire stream
         }
 
         return await axios.post(url, fileStream, axiosOpts)
