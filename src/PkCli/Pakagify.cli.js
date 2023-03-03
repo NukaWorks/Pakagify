@@ -16,19 +16,37 @@ function decodeToken (token) {
 }
 
 function mainCommand (argv) {
-  // argv.forEach(arg => {
-  //   if (arg.length <= 0 || (arg.match('-h') || arg.match('help'))) {
-  //     console.log('// TODO ASCII pkcli logo')
-  //   }
-  // })
-
+  // Debug mode
   argv.forEach(arg => {
     if ((arg.match('-D'))) DEBUG_MODE = true
   })
 
   program
     .name('pkcli')
-    .description('Pakagify CLI')
+    .description('Pakagify CLI\n             ///////////////////////////////////            \n' +
+      '      /////////////////////////////////////////////////     \n' +
+      '   //////////////////////////////////////////////////////*  \n' +
+      '  ///////////////////////////////////////////////////////// \n' +
+      ' ///////////////////////////////////////////////////////////\n' +
+      '////////////////////////////////////////////////////////////\n' +
+      '////////////////////////////////////////////////////////////\n' +
+      '//////////////////////////////////@@@@@/////////////////////\n' +
+      '////////////@@@@@@@@@@@@@@@@//////@@@@@/////////////////////\n' +
+      '////////////@@@@@//////*@@@@@@////@@@@@/////////////////////\n' +
+      '////////////@@@@@////////*@@@@@///@@@@@/////////////////////\n' +
+      '////////////@@@@@////////@@@@@@///@@@@@/////%@@@@@//////////\n' +
+      '////////////@@@@@@@@@@@@@@@@@@////@@@@@///%@@@@@////////////\n' +
+      '////////////@@@@@@@@@@@@@@@*//////@@@@@/#@@@@@//////////////\n' +
+      '////////////@@@@@/////////////////@@@@@@@@@@@///////////////\n' +
+      '////////////@@@@@/////////////////@@@@@//@@@@@@/////////////\n' +
+      '////////////@@@@@/////////////////@@@@@////@@@@@@///////////\n' +
+      '////////////@@@@@/////////////////@@@@@//////@@@@@@/////////\n' +
+      '////////////////////////////////////////////////////////////\n' +
+      '////////////////////////////////////////////////////////////\n' +
+      ' ///////////////////////////////////////////////////////////\n' +
+      '  ///////////////////////////////////////////////////////// \n' +
+      '   //////////////////////////////////////////////////////.  \n' +
+      '      /////////////////////////////////////////////////     ')
     .version(version)
     .option('-D, --debug', 'Debug mode')
 
@@ -41,14 +59,14 @@ function mainCommand (argv) {
       }
 
       configProvider.set('token', Buffer.from(token).toString('base64'))
-
       processData(decodeToken(configProvider.get('token')))
         .getUser()
         .then(user => {
           configProvider.save()
           console.log(`${chalk.bold.greenBright('Successfully')} authenticated as ${chalk.bold.white(user.login)} !`)
         }).catch(err => {
-          console.error(err)
+          console.error(`Unable to verify authentication token. Please try to ${chalk.bold.white('logout')} and ${chalk.bold.white('login')} again.`)
+          DEBUG_MODE && console.error(err)
           process.exit(1)
         })
     })
@@ -74,7 +92,8 @@ function mainCommand (argv) {
         .then(user => {
           console.log(`You are currently authenticated as ${chalk.bold.white(user.login)} !`)
         }).catch(err => {
-          console.error(err)
+          console.error(`Unable to verify authentication token. Please try to ${chalk.bold.white('logout')} and ${chalk.bold.white('login')} again.`)
+          DEBUG_MODE && console.error(err)
           process.exit(1)
         })
     })
@@ -131,7 +150,8 @@ function mainCommand (argv) {
               .then(res => {
                 DEBUG_MODE && console.debug(res)
               }).catch(err => {
-                console.error(err)
+                console.error(`Error while getting package data: ${err.message} - ${err.status}`)
+                DEBUG_MODE && console.error(err)
                 process.exit(1)
               })
           })
@@ -269,7 +289,8 @@ function mainCommand (argv) {
                 console.log(`${chalk.bold.greenBright('Successfully')} deleted repository ${chalk.bold.white(name)} ${chalk.grey(`(${latestReleaseTag})`)} !`)
                 DEBUG_MODE && console.debug(res)
               }).catch(err => {
-                console.error(err)
+                console.error(`${chalk.bold.redBright('Error')} while deleting repository ${chalk.bold.white(name)} ${chalk.grey(`(${latestReleaseTag})`)} !`)
+                DEBUG_MODE && console.debug(err)
                 process.exit(1)
               })
           } else if (type === 'package') {
