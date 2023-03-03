@@ -129,7 +129,7 @@ function mainCommand (argv) {
                 spinner.succeed(`Repository ${chalk.bold.white(res.name)} found !`)
                 console.log(res)
               }).catch(err => {
-                console.error(`${chalk.bold.redBright('Error')} while getting repository data: ${err.message} - ${err.status}`)
+                console.error(`${chalk.bold.redBright('Error')} while getting repository data: ${err.message}`)
                 DEBUG_MODE && console.error(err)
                 process.exit(1)
               })
@@ -158,7 +158,7 @@ function mainCommand (argv) {
                 spinner.succeed(`Package ${chalk.bold.white(res.name)} found !`)
                 console.log(res)
               }).catch(err => {
-                console.error(`${chalk.bold.redBright('Error')} while getting package data: ${err.message} - ${err.status}`)
+                console.error(`${chalk.bold.redBright('Error')} while getting package data: ${err.message}`)
                 DEBUG_MODE && console.error(err)
                 process.exit(1)
               })
@@ -204,7 +204,7 @@ function mainCommand (argv) {
                 spinner.succeed(`${chalk.bold.greenBright('Successfully')} created repository ${chalk.bold.white(res.repo.name)} !`)
                 DEBUG_MODE && console.debug(res)
               }).catch(err => {
-                spinner.fail(`Error while creating repository: ${err.message} - ${err.status}`)
+                spinner.fail(`Error while creating repository: ${err.message}`)
                 DEBUG_MODE && console.error(err)
                 process.exit(1)
               })
@@ -244,6 +244,22 @@ function mainCommand (argv) {
               }
             }
 
+            // Check if platform is valid
+            if (options.platform !== 'linux' && options.platform !== 'windows' && options.platform !== 'macos' && options.platform !== 'any') {
+              console.error(`${chalk.bold.redBright('Error')} Invalid platform.`)
+              return process.exit(1)
+            }
+
+            // Check if arch is valid
+            if (options.arch !== 'x86' &&
+              options.arch !== 'x64' &&
+              options.arch !== 'armv7' &&
+              options.arch !== 'arm64' &&
+              options.arch !== 'noarch') {
+              console.error(`${chalk.bold.redBright('Error')} Invalid architecture.`)
+              return process.exit(1)
+            }
+
             const spinner = ora('Creating package...').start()
             processData(decodeToken(configProvider.get('token')))
               .makePackage(
@@ -257,11 +273,11 @@ function mainCommand (argv) {
                 options.platform,
                 options.dirs)
               .then(r => {
-                spinner.succeed(`${chalk.bold.greenBright('Successfully')} created package ${chalk.bold.white(userAndName[1])} !`)
+                spinner.succeed(`${chalk.bold.greenBright('Successfully')} created package ${chalk.bold.white(name)} ${chalk.grey(`(${options.version}, ${options.arch}, ${options.platform})`)} !`)
                 DEBUG_MODE && console.debug(r)
               })
               .catch(err => {
-                spinner.fail(`Error while creating package: ${err.message} - ${err.status}`)
+                spinner.fail(`Error while creating package: ${err.message}`)
                 DEBUG_MODE && console.error(err)
                 process.exit(1)
               })
@@ -276,7 +292,7 @@ function mainCommand (argv) {
     .description('Delete a repository, package ...')
     .option('-R, --repository <repository>', 'Select the repository for the package to delete')
     .action((type, name, options) => {
-      const userAndName = name.split('/')
+      let userAndName = name.split('/')
 
       if (!configProvider.has('token')) {
         console.error(`${chalk.bold.redBright('Error')} You need to authenticate first.`)
@@ -316,6 +332,14 @@ function mainCommand (argv) {
                 process.exit(1)
               })
           } else if (type === 'package') {
+            userAndName = options.repository.split('/')
+
+            // Check if no org user specified
+            if (userAndName.length <= 1) {
+              userAndName[0] = user.login
+              userAndName[1] = options.repository
+            }
+
             if (!configProvider.has('token')) {
               console.error(`${chalk.bold.redBright('Error')} You need to authenticate first.`)
               process.exit(1)
@@ -330,7 +354,7 @@ function mainCommand (argv) {
 
             const spinner = ora('Deleting package...').start()
             processData(decodeToken(configProvider.get('token')))
-              .deletePackage(userAndName[0], options.repository, userAndName[1])
+              .deletePackage(userAndName[0], userAndName[1], name)
               .then(res => {
                 spinner.succeed(`${chalk.bold.greenBright('Successfully')} deleted package ${chalk.bold.white(userAndName[1])} !`)
                 DEBUG_MODE && console.debug(res)
