@@ -41,7 +41,7 @@ class ConfigProvider {
 
   retrieve () {
     // Retrieve the json config
-    if (!fs.existsSync(CONFIG_FILE)) throw new Error('Config file not found.')
+    if (!fs.existsSync(CONFIG_FILE)) this.save()
     this._config = JSON.parse(fs.readFileSync(CONFIG_FILE, 'utf8'))
   }
 }
