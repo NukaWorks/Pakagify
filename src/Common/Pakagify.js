@@ -49,16 +49,14 @@ export class Pakagify {
         return await axios.post(url, fileStream, axiosOpts)
           .then(response => {
             if (response.status !== 201) throw new Error(response.statusText)
-            return response.data
-          })
-          .then(data => {
-            return data
+            return response
           })
           .catch(error => {
-            throw new Error('Error uploading asset: ' + error)
+            if (error.response.status === 422) throw new Error('Asset already exists')
+            else throw new Error('Error uploading asset: ' + error)
           })
       }).catch(err => {
-        console.error(err)
+        throw new Error(err)
       })
   }
 
@@ -94,7 +92,7 @@ export class Pakagify {
 
   async getPakRepositoryData (user, repoName) {
     const axiosOpts = {
-      headers: { Authorization: 'Bearer ' + this.#ghToken }
+      headers: { Authorization: 'Bearer ' + this.#ghToken, Accept: 'application/octet-stream' }
     }
 
     return this.getLatestRelease(user, repoName)
@@ -103,7 +101,9 @@ export class Pakagify {
           if (asset.name === 'repo.json') {
           // Get the asset data
             return await axios.get(`https://api.github.com/repos/${user}/${repoName}/releases/assets/${asset.id}`, axiosOpts)
-              .then(res => res.data)
+              .then(res => {
+                return res.data
+              })
               .catch(err => {
                 throw new Error(`Error fetching the repo.json file (${err.message}): ERR_CODE: ${err.status}`)
               })
@@ -188,8 +188,9 @@ export class Pakagify {
     packageModel.created_at = new Date().toISOString()
 
     return await this.getLatestRelease(user, repoName).then(async (release) => {
-      for (const asset in release.assets) {
-        if (asset.name === packageName) throw new Error(`Package already exists (${packageName})`)
+      const _pkName = `${packageName}-${platform}_${arch}.pkg.zip`
+      for (const asset of release.assets) {
+        if (asset.name === _pkName) throw new Error(`Package already exists (${packageName})`)
       }
       packageModel.release_url = release.html_url
 
@@ -225,11 +226,13 @@ export class Pakagify {
           // Upload the asset
           return this.pushRepoData(user, repoName,
             `${packageName}-${platform}_${arch}.pkg.zip`, Buffer.from(fs.readFileSync(`${packageName}-${platform}_${arch}.pkg.zip`)))
-            .then(res => {
-              if (res.status !== 201) throw new Error(`Error uploading the package (${packageName})`)
+            .then(() => {
               return this.deleteAsset(user, repoName, 'repo.json').then(async () => {
                 return await this.pushRepoData(user, repoName, 'repo.json', JSON.stringify(repoDataPatch))
               })
+            })
+            .catch(err => {
+              throw new Error(`Error uploading the package (${packageName}) - ${err.message}`)
             })
         })
       })
