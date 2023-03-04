@@ -99,7 +99,7 @@ export class Pakagify extends EventEmitter {
         for (const asset of rel.assets) {
           if (asset.name === 'repo.json') {
           // Get the asset data
-            return await axios.get(`https://api.github.com/repos/${user}/${repoName}/releases/assets/${asset.id}`, axiosOpts)
+            return await axios.get(asset.browser_download_url, axiosOpts)
               .then(res => {
                 return res.data
               })
