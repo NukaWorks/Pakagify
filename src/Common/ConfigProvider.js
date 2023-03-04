@@ -4,7 +4,7 @@ import * as path from 'path'
 const CONFIG_DIR = process.platform === 'windows'
   ? path.join(process.env.APPDATA, 'pakagify/')
   : path.join(process.env.HOME, '.config/pakagify/')
-const CONFIG_FILE = path.join(CONFIG_DIR, 'pcli.json')
+const CONFIG_FILE = path.join(CONFIG_DIR, 'pkcli.json')
 
 class ConfigProvider {
   constructor () {
