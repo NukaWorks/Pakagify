@@ -7,6 +7,7 @@ import { RepoModel } from './DataModels/RepoModel'
 import fs from 'fs'
 import axios from 'axios'
 import { EventEmitter } from 'events'
+import * as path from 'path'
 
 export class Pakagify extends EventEmitter {
   #ghToken = ''
@@ -201,7 +202,7 @@ export class Pakagify extends EventEmitter {
 
       files.forEach(dir => {
         if (fs.lstatSync(dir).isDirectory()) {
-          zip.addLocalFolder(dir, prefix)
+          zip.addLocalFolder(dir, path.join(prefix, dir))
         } else zip.addLocalFile(dir, prefix)
       })
 
