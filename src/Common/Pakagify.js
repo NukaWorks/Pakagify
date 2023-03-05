@@ -214,7 +214,7 @@ export class Pakagify extends EventEmitter {
           // Checks if the package already exists on the repo, if so, delete it (in case of update)
           repoData.packages.forEach((value, index, array) => {
             if (
-              value.name === packageName &&
+              value.name === packageModel.name &&
               value.platform === packageModel.platform &&
               value.arch === packageModel.arch
             ) array.splice(index, 1) // Remove the package from the array
