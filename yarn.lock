@@ -745,10 +745,10 @@
   resolved "https://registry.yarnpkg.com/@types/node/-/node-18.11.17.tgz#5c009e1d9c38f4a2a9d45c0b0c493fe6cdb4bcb5"
   integrity sha512-HJSUJmni4BeDHhfzn6nF0sVmd1SMezP7/4F0Lq+aXzmp2xm9O7WXrUtHW/CHlYVtZUbByEvWidHqRtcJXGF2Ng==
 
-"@types/node@^14.6.2":
-  version "14.18.36"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-14.18.36.tgz#c414052cb9d43fab67d679d5f3c641be911f5835"
-  integrity sha512-FXKWbsJ6a1hIrRxv+FoukuHnGTgEzKYGi7kilfMae96AL9UNkPFNWJEEYWzdRI9ooIkbr4AKldyuSTLql06vLQ==
+"@types/node@^16.11.26":
+  version "16.18.14"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-16.18.14.tgz#5465ce598486a703caddbefe8603f8a2cffa3461"
+  integrity sha512-wvzClDGQXOCVNU4APPopC2KtMYukaF1MN/W3xAmslx22Z4/IF1/izDMekuyoUlwfnDHYCIZGaj7jMwnJKBTxKw==
 
 "@types/prop-types@*":
   version "15.7.5"
@@ -1307,13 +1307,13 @@ electron-log@^5.0.0-beta.16:
   resolved "https://registry.yarnpkg.com/electron-log/-/electron-log-5.0.0-beta.16.tgz#70277007f4d438d4c1a658ba4c1219e93ef79481"
   integrity sha512-oBGFKjAsOXyzhvJIW0s+HIA7cV+kZ0B0FvO3hKyS8yPDGFsjQyr3M8N7ZyYxI6yEeihVID3CCfsTmpi6L9k0gw==
 
-electron@^16.0.0:
-  version "16.2.8"
-  resolved "https://registry.yarnpkg.com/electron/-/electron-16.2.8.tgz#b7f2bd1184701e54a1bc902839d5a3ec95bb8982"
-  integrity sha512-KSOytY6SPLsh3iCziztqa/WgJyfDOKzCvNqku9gGIqSdT8CqtV66dTU1SOrKZQjRFLxHaF8LbyxUL1vwe4taqw==
+electron@^18.3.7:
+  version "18.3.7"
+  resolved "https://registry.yarnpkg.com/electron/-/electron-18.3.7.tgz#a22a23d63811d067c8e33abc5674122408319265"
+  integrity sha512-SDvX0VYejR1xw9PrJyvnyiDcuIhdzFVaA1NaRN2LEWXr5R6mEFl8NVTM+i5dtxMm2SHP/FPnkvmsWZs6MHijqg==
   dependencies:
     "@electron/get" "^1.13.0"
-    "@types/node" "^14.6.2"
+    "@types/node" "^16.11.26"
     extract-zip "^1.0.3"
 
 encodeurl@^1.0.2:
