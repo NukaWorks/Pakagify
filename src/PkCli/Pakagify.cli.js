@@ -49,7 +49,8 @@ function mainCommand (argv) {
         ' ///////////////////////////////////////////////////////////\n' +
         '  ///////////////////////////////////////////////////////// \n' +
         '   //////////////////////////////////////////////////////.  \n' +
-        '      /////////////////////////////////////////////////     '
+        '      /////////////////////////////////////////////////     \n' +
+        '             ///////////////////////////////////            \n'
     )
     .version(version)
     .option('-D, --debug', 'Debug mode')
@@ -294,11 +295,12 @@ function mainCommand (argv) {
 
             const spinner = ora('Creating package...').start()
 
-            processData(decodeToken(configProvider.get('token'))).on('uploadProgress', (progress, bitrate, time) => {
-              spinner.text = `Uploading package... ${chalk.grey(
+            processData(decodeToken(configProvider.get('token')))
+              .on('uploadProgress', (progress, bitrate, time) => {
+                spinner.text = `Uploading package... ${chalk.grey(
                 `${formatTime(time)} remaining, ${bitrate}`
               )} ${chalk.bold.white(`${progress} %`)}`
-            })
+              })
 
             processData(decodeToken(configProvider.get('token')))
               .makePackage(
