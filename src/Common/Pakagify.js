@@ -241,15 +241,17 @@ export class Pakagify extends EventEmitter {
     })
   }
 
-  async deletePackage (user, repoName, packageName) {
+  async deletePackage (user, repoName, packageName, arch, platform) {
     return this.getPakRepositoryData(user, repoName).then(repoData => {
       if (repoData.packages.length === 0) throw new Error('No packages found')
-      let _pkg = null
+
+      const _pkg = []
       repoData.packages.forEach((value, index, array) => {
-        if (packageName === value.name) array.splice(index, 1) && (_pkg = value)
+        if (packageName === value.name || (packageName === value.name || arch === value.arch || platform === value.platform)) array.splice(index, 1) && _pkg.push(value)
       })
 
-      if (_pkg === null) throw new Error(`Package not found (${packageName})`)
+      if (_pkg.length > 1) throw new Error(`Multiple packages found (${packageName}) ${JSON.stringify(_pkg)}`)
+      if (_pkg.length <= 0) throw new Error(`Package not found (${packageName})`)
       else {
         return this.deleteAsset(user, repoName, `${packageName}-${_pkg.platform}_${_pkg.arch}.pkg.zip`).then(async () => {
           return this.deleteAsset(user, repoName, 'repo.json').then(async () => {

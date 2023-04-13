@@ -8,9 +8,37 @@ import { formatTime } from '../Common/Utils'
 
 const configProvider = new ConfigProvider()
 let DEBUG_MODE = false
+
 function processData (token) {
   if (!processData.instance) processData.instance = new Pakagify(token)
   return processData.instance
+}
+
+function validateArch (arch) {
+  // Check if arch is valid
+  if (
+    arch !== 'x86' &&
+    arch !== 'x64' &&
+    arch !== 'armv7' &&
+    arch !== 'arm64' &&
+    arch !== 'noarch'
+  ) {
+    console.error(`${chalk.bold.redBright('Error')} Invalid architecture.`)
+    return false
+  }
+}
+
+function validatePlatform (platform) {
+  // Check if platform is valid
+  if (
+    platform !== 'linux' &&
+    platform !== 'windows' &&
+    platform !== 'darwin' &&
+    platform !== 'any'
+  ) {
+    console.error(`${chalk.bold.redBright('Error')} Invalid platform.`)
+    return false
+  }
 }
 
 function decodeToken (token) {
@@ -27,30 +55,30 @@ function mainCommand (argv) {
     .name('pkcli')
     .description(
       'Pakagify CLI\n             ///////////////////////////////////            \n' +
-        '      /////////////////////////////////////////////////     \n' +
-        '   //////////////////////////////////////////////////////*  \n' +
-        '  ///////////////////////////////////////////////////////// \n' +
-        ' ///////////////////////////////////////////////////////////\n' +
-        '////////////////////////////////////////////////////////////\n' +
-        '////////////////////////////////////////////////////////////\n' +
-        '//////////////////////////////////@@@@@/////////////////////\n' +
-        '////////////@@@@@@@@@@@@@@@@//////@@@@@/////////////////////\n' +
-        '////////////@@@@@//////*@@@@@@////@@@@@/////////////////////\n' +
-        '////////////@@@@@////////*@@@@@///@@@@@/////////////////////\n' +
-        '////////////@@@@@////////@@@@@@///@@@@@/////%@@@@@//////////\n' +
-        '////////////@@@@@@@@@@@@@@@@@@////@@@@@///%@@@@@////////////\n' +
-        '////////////@@@@@@@@@@@@@@@*//////@@@@@/#@@@@@//////////////\n' +
-        '////////////@@@@@/////////////////@@@@@@@@@@@///////////////\n' +
-        '////////////@@@@@/////////////////@@@@@//@@@@@@/////////////\n' +
-        '////////////@@@@@/////////////////@@@@@////@@@@@@///////////\n' +
-        '////////////@@@@@/////////////////@@@@@//////@@@@@@/////////\n' +
-        '////////////////////////////////////////////////////////////\n' +
-        '////////////////////////////////////////////////////////////\n' +
-        ' ///////////////////////////////////////////////////////////\n' +
-        '  ///////////////////////////////////////////////////////// \n' +
-        '   //////////////////////////////////////////////////////.  \n' +
-        '      /////////////////////////////////////////////////     \n' +
-        '             ///////////////////////////////////            \n'
+      '      /////////////////////////////////////////////////     \n' +
+      '   //////////////////////////////////////////////////////*  \n' +
+      '  ///////////////////////////////////////////////////////// \n' +
+      ' ///////////////////////////////////////////////////////////\n' +
+      '////////////////////////////////////////////////////////////\n' +
+      '////////////////////////////////////////////////////////////\n' +
+      '//////////////////////////////////@@@@@/////////////////////\n' +
+      '////////////@@@@@@@@@@@@@@@@//////@@@@@/////////////////////\n' +
+      '////////////@@@@@//////*@@@@@@////@@@@@/////////////////////\n' +
+      '////////////@@@@@////////*@@@@@///@@@@@/////////////////////\n' +
+      '////////////@@@@@////////@@@@@@///@@@@@/////%@@@@@//////////\n' +
+      '////////////@@@@@@@@@@@@@@@@@@////@@@@@///%@@@@@////////////\n' +
+      '////////////@@@@@@@@@@@@@@@*//////@@@@@/#@@@@@//////////////\n' +
+      '////////////@@@@@/////////////////@@@@@@@@@@@///////////////\n' +
+      '////////////@@@@@/////////////////@@@@@//@@@@@@/////////////\n' +
+      '////////////@@@@@/////////////////@@@@@////@@@@@@///////////\n' +
+      '////////////@@@@@/////////////////@@@@@//////@@@@@@/////////\n' +
+      '////////////////////////////////////////////////////////////\n' +
+      '////////////////////////////////////////////////////////////\n' +
+      ' ///////////////////////////////////////////////////////////\n' +
+      '  ///////////////////////////////////////////////////////// \n' +
+      '   //////////////////////////////////////////////////////.  \n' +
+      '      /////////////////////////////////////////////////     \n' +
+      '             ///////////////////////////////////            \n'
     )
     .version(version)
     .option('-D, --debug', 'Debug mode')
@@ -271,35 +299,18 @@ function mainCommand (argv) {
             }
 
             // Check if platform is valid
-            if (
-              options.platform !== 'linux' &&
-              options.platform !== 'windows' &&
-              options.platform !== 'darwin' &&
-              options.platform !== 'any'
-            ) {
-              console.error(`${chalk.bold.redBright('Error')} Invalid platform.`)
-              return process.exit(1)
-            }
+            validatePlatform(options.platform)
 
             // Check if arch is valid
-            if (
-              options.arch !== 'x86' &&
-              options.arch !== 'x64' &&
-              options.arch !== 'armv7' &&
-              options.arch !== 'arm64' &&
-              options.arch !== 'noarch'
-            ) {
-              console.error(`${chalk.bold.redBright('Error')} Invalid architecture.`)
-              return process.exit(1)
-            }
+            validateArch(options.arch)
 
             const spinner = ora('Creating package...').start()
 
             processData(decodeToken(configProvider.get('token')))
               .on('uploadProgress', (progress, bitrate, time) => {
                 spinner.text = `Uploading package... ${chalk.grey(
-                `${formatTime(time)} remaining, ${bitrate}`
-              )} ${chalk.bold.white(`${progress} %`)}`
+                  `${formatTime(time)} remaining, ${bitrate}`
+                )} ${chalk.bold.white(`${progress} %`)}`
               })
 
             processData(decodeToken(configProvider.get('token')))
@@ -338,6 +349,8 @@ function mainCommand (argv) {
     .command('delete <type> <name>')
     .description('Delete a repository, package ...')
     .option('-R, --repository <repository>', 'Select the repository for the package to delete')
+    .option('-a, --arch <arch>', 'Architecture of the package')
+    .option('-p, --platform <platform>', 'Platform of the package')
     .action((type, name, options) => {
       let userAndName = name.split('/')
 
@@ -392,6 +405,18 @@ function mainCommand (argv) {
                 process.exit(1)
               })
           } else if (type === 'package') {
+            switch (!options) {
+              case options.arch: {
+                console.error(`${chalk.bold.redBright('Error')} You need to specify the architecture.`)
+                return process.exit(1)
+              }
+
+              case options.platform: {
+                console.error(`${chalk.bold.redBright('Error')} You need to specify the platform.`)
+                return process.exit(1)
+              }
+            }
+
             userAndName = options.repository.split('/')
 
             // Check if no org user specified
@@ -414,7 +439,7 @@ function mainCommand (argv) {
 
             const spinner = ora('Deleting package...').start()
             processData(decodeToken(configProvider.get('token')))
-              .deletePackage(userAndName[0], userAndName[1], name)
+              .deletePackage(userAndName[0], userAndName[1], name, options.arch, options.platform)
               .then((res) => {
                 spinner.succeed(
                   `${chalk.bold.greenBright('Successfully')} deleted package ${chalk.bold.white(userAndName[1])} !`
