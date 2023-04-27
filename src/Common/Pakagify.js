@@ -193,6 +193,7 @@ export class Pakagify extends EventEmitter {
         if (asset.name === _pkName) throw new Error(`Package already exists (${packageName})`)
       }
       packageModel.release_url = release.html_url
+      packageModel.download_url = `${release.html_url}/download/${_pkName}`
 
       // Make a zip file with adm-zip
       const zip = new AdmZip('', undefined)
