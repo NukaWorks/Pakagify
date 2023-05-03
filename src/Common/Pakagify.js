@@ -176,6 +176,7 @@ export class Pakagify extends EventEmitter {
     const packageModel = PackageModel
     packageModel.name = packageName
     packageModel.version = version
+    packageModel.dependencies = []
     packageModel.arch = arch || process.arch
     packageModel.description = description || ''
     packageModel.install_location = installLocation
