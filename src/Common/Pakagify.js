@@ -194,6 +194,8 @@ export class Pakagify extends EventEmitter {
       }
       packageModel.release_url = release.html_url
       packageModel.download_url = `${release.html_url}/download/${_pkName}`
+      // https://api.github.com/repos/OWNER/REPO/releases/assets/ASSET_ID
+      packageModel.download_url = `https://api.github.com/repos/${user}/${repoName}/releases/download/${release.name}/${_pkName}`
 
       // Make a zip file with adm-zip
       const zip = new AdmZip('', undefined)
