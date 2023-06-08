@@ -33,6 +33,7 @@ function validatePlatform (platform) {
   if (
     platform !== 'linux' &&
     platform !== 'windows' &&
+    platform !== 'win32' &&
     platform !== 'darwin' &&
     platform !== 'any'
   ) {
