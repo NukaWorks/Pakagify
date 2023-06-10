@@ -324,7 +324,9 @@ function mainCommand (argv) {
                 options.installLocation,
                 options.arch,
                 options.platform,
-                options.dirs
+                options.dirs,
+                options.preinst,
+                options.postinst
               )
               .then((r) => {
                 spinner.succeed(
