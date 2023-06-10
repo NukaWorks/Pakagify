@@ -1,7 +1,7 @@
 import fs from 'fs'
 import * as path from 'path'
 
-const CONFIG_DIR = process.platform === 'windows'
+const CONFIG_DIR = process.platform === 'win32'
   ? path.join(process.env.APPDATA, 'pakagify/')
   : path.join(process.env.HOME, '.config/pakagify/')
 const CONFIG_FILE = path.join(CONFIG_DIR, 'pkcli.json')
