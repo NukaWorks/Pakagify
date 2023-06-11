@@ -326,7 +326,8 @@ function mainCommand (argv) {
                 options.platform,
                 options.dirs,
                 options.preinst,
-                options.postinst
+                options.postinst,
+                options.restartRequired
               )
               .then((r) => {
                 spinner.succeed(
