@@ -1437,10 +1437,10 @@ electron-log@^5.0.0-beta.16:
   resolved "https://registry.yarnpkg.com/electron-log/-/electron-log-5.0.0-beta.16.tgz#70277007f4d438d4c1a658ba4c1219e93ef79481"
   integrity sha512-oBGFKjAsOXyzhvJIW0s+HIA7cV+kZ0B0FvO3hKyS8yPDGFsjQyr3M8N7ZyYxI6yEeihVID3CCfsTmpi6L9k0gw==
 
-electron@^23.1.2:
-  version "23.1.2"
-  resolved "https://registry.yarnpkg.com/electron/-/electron-23.1.2.tgz#f03e361c94f8dd2407963b5461d19aadea335316"
-  integrity sha512-ajE6xzIwH7swf8TlTU5WklDqpI3mPj4Am6690YrpCXzcp+E+dmMBXIajUUNt4joDrFhJC/lC6ZqDS2Q1BApKgQ==
+electron@^23.3.13:
+  version "23.3.13"
+  resolved "https://registry.yarnpkg.com/electron/-/electron-23.3.13.tgz#bd2ae8eef83d1ed9504410fbe03598176c5f8817"
+  integrity sha512-BaXtHEb+KYKLouUXlUVDa/lj9pj4F5kiE0kwFdJV84Y2EU7euIDgPthfKtchhr5MVHmjtavRMIV/zAwEiSQ9rQ==
   dependencies:
     "@electron/get" "^2.0.0"
     "@types/node" "^16.11.26"
