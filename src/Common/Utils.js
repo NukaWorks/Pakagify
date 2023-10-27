@@ -1,21 +1,22 @@
 import fs from 'fs'
 import * as path from 'path'
 
-function listFilesRecursively (directory) {
+function listFilesRecursively(directory) {
   let fileList = []
 
   for (const element of directory) {
-    const fullPath = path.join(element)
-    const stats = fs.statSync(fullPath)
+    const fullPath = path.join(element).replace(/\\/g, '/');
+    const stats = fs.statSync(fullPath);
     if (stats.isDirectory()) {
-      fileList = fileList.concat(listFilesRecursively(fs.readdirSync(fullPath).map(file => path.join(fullPath, file))))
+      fileList = fileList.concat(listFilesRecursively(fs.readdirSync(fullPath).map(file => (path.join(fullPath, file)).replace(/\\/g, '/')));
     } else if (stats.isFile()) {
-      fileList.push(fullPath)
+      fileList.push(fullPath);
     }
   }
 
-  return fileList
+  return fileList;
 }
+
 
 function calculateBitrate (bytesDownloaded, downloadTimeSeconds) {
   // Calculate the bitrate in bytes per second
