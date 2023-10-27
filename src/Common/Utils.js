@@ -8,7 +8,7 @@ function listFilesRecursively(directory) {
     const fullPath = path.join(element).replace(/\\/g, '/');
     const stats = fs.statSync(fullPath);
     if (stats.isDirectory()) {
-      fileList = fileList.concat(listFilesRecursively(fs.readdirSync(fullPath).map(file => (path.join(fullPath, file)).replace(/\\/g, '/')));
+      fileList = fileList.concat(listFilesRecursively(fs.readdirSync(fullPath).map(file => (path.join(fullPath, file)).replace(/\\/g, '/'))))
     } else if (stats.isFile()) {
       fileList.push(fullPath);
     }
