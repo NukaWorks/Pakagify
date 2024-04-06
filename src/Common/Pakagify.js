@@ -23,25 +23,36 @@ export class Pakagify extends EventEmitter {
 
   async createRelease (user, repoName) {
     const uuid = uuidv4().split('-')[1] // Generate & Get the first part of the uuid
-    return await this.#octokit.rest.repos.createRelease({ owner: user, repo: repoName, tag_name: uuid })
+    return await this.#octokit.rest.repos.createRelease({
+      owner: user,
+      repo: repoName,
+      tag_name: uuid
+    })
       .then(({ data }) => {
         return data
       })
   }
 
   async pushRepoData (user, repoName, fileName, fileData) {
-    return this.#octokit.rest.repos.getLatestRelease({ owner: user, repo: repoName })
+    return this.#octokit.rest.repos.getLatestRelease({
+      owner: user,
+      repo: repoName
+    })
       .then(async ({ data }) => {
         const url = `https://uploads.github.com/repos/${user}/${repoName}/releases/${data.id}/assets?name=${fileName}`
         const fileStream = Buffer.from(fileData)
         const fileSize = Buffer.byteLength(fileStream)
 
         const axiosOpts = {
-          headers: { Authorization: 'Bearer ' + this.#ghToken, 'Content-Type': 'application/octet-stream', 'Content-Length': fileSize },
+          headers: {
+            Authorization: 'Bearer ' + this.#ghToken,
+            'Content-Type': 'application/octet-stream',
+            'Content-Length': fileSize
+          },
           onUploadProgress: (progressEvent) => {
             const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total)
             const bitrate = calculateBitrate(progressEvent.rate, progressEvent.estimated / 1000)
-            this.emit('uploadProgress', percentCompleted, bitrate, progressEvent.estimated)
+            this.emit('uploadProgress', percentCompleted, bitrate, progressEvent.estimated, fileName)
           },
           maxRedirects: 0 // avoid buffering the entire stream
         }
@@ -52,9 +63,50 @@ export class Pakagify extends EventEmitter {
             return response
           })
           .catch(error => {
-            if (error.response.status === 422) throw new Error('Asset already exists')
-            else throw new Error('Error uploading asset: ' + error)
+            if (error.response.status === 422) {
+              throw new Error('Asset already exists')
+            } else {
+              throw new Error('Error uploading asset: ' + error)
+            }
           })
+      }).catch(err => {
+        throw new Error(err)
+      })
+  }
+
+  async downloadRepoData (user, repoName, DEBUG_MODE) {
+    return await this.#octokit.rest.repos.getLatestRelease({
+      owner: user,
+      repo: repoName
+    })
+      .then(async ({ data }) => {
+        for (const asset of data.assets) {
+          DEBUG_MODE && console.log('asset', asset)
+          const url = asset.browser_download_url
+          const axiosOpts = {
+            responseType: 'stream',
+            headers: {
+              Authorization: 'Bearer ' + this.#ghToken
+            },
+            onDownloadProgress: (progressEvent) => {
+              const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total)
+              const bitrate = calculateBitrate(progressEvent.rate, progressEvent.estimated / 1000)
+              this.emit('downloadProgress', percentCompleted, bitrate, progressEvent.estimated, asset.name)
+            }
+          }
+          const response = await axios.get(url, axiosOpts)
+          const filePath = path.join(process.cwd(), asset.name)
+          const writer = fs.createWriteStream(filePath)
+
+          response.data.pipe(writer)
+
+          await new Promise((resolve, reject) => {
+            writer.on('finish', resolve)
+            writer.on('error', reject)
+          })
+        }
+
+        return data
       }).catch(err => {
         throw new Error(err)
       })
@@ -80,7 +132,10 @@ export class Pakagify extends EventEmitter {
   }
 
   async getGitRepositoryData (user, repoName) {
-    return this.#octokit.rest.repos.get({ owner: user, repo: repoName })
+    return this.#octokit.rest.repos.get({
+      owner: user,
+      repo: repoName
+    })
       .then(async ({ data }) => {
         if (data.status === 404) throw new Error(`Repository ${repoName} not found for user ${user}`)
         return data
@@ -92,14 +147,17 @@ export class Pakagify extends EventEmitter {
 
   async getPakRepositoryData (user, repoName) {
     const axiosOpts = {
-      headers: { Authorization: 'Bearer ' + this.#ghToken, Accept: 'application/octet-stream' }
+      headers: {
+        Authorization: 'Bearer ' + this.#ghToken,
+        Accept: 'application/octet-stream'
+      }
     }
 
     return this.getLatestRelease(user, repoName)
       .then(async rel => {
         for (const asset of rel.assets) {
           if (asset.name === 'repo.json') {
-          // Get the asset data
+            // Get the asset data
             return await axios.get(`https://api.github.com/repos/${user}/${repoName}/releases/assets/${asset.id}`, axiosOpts)
               .then(res => {
                 return res.data
@@ -117,12 +175,14 @@ export class Pakagify extends EventEmitter {
       repo.packages.forEach(pkg => {
         if (pkg.name === packageName) {
           return pkg
-        } else throw new Error(`Package not found (${packageName})`)
+        } else {
+          throw new Error(`Package not found (${packageName})`)
+        }
       })
     })
   }
 
-  async makeRepository (user, repoName, isDebug) {
+  async makeRepository (user, repoName, isDebug, isLocalRepository) {
     return this.getGitRepositoryData(user, repoName)
       .then(repo => {
         const repoModel = RepoModel
@@ -136,23 +196,32 @@ export class Pakagify extends EventEmitter {
 
         isDebug && console.debug(repo)
 
-        return this.createRelease(user, repoName, true)
-          .then(async rel => {
-            isDebug && console.debug(rel)
+        if (!isLocalRepository) {
+          return this.createRelease(user, repoName, true)
+            .then(async rel => {
+              isDebug && console.debug(rel)
 
-            return await this.pushRepoData(user, repoName, 'repo.json',
-              JSON.stringify(RepoModel)).then(push => {
-              isDebug && console.debug(push)
+              return await this.pushRepoData(user, repoName, 'repo.json',
+                JSON.stringify(RepoModel)).then(push => {
+                isDebug && console.debug(push)
 
-              // Group the data
-              push.asset = push.data
-              delete push.data
-              push.release = rel
-              push.repo = repo
+                // Group the data
+                push.asset = push.data
+                delete push.data
+                push.release = rel
+                push.repo = repo
 
-              return push
+                return push
+              })
             })
-          })
+        } else {
+          const kitchenDir = path.join(process.cwd(), 'kitchen')
+          if (!fs.existsSync(kitchenDir)) fs.mkdirSync(kitchenDir)
+          if (fs.existsSync(path.join(kitchenDir, 'repo.json'))) throw new Error('Repository already exists')
+          fs.writeFileSync(path.join(kitchenDir, 'repo.json'), JSON.stringify(repoModel))
+
+          return { repo: repoModel }
+        }
       }).catch(err => {
         console.error(err)
         process.exit(1)
@@ -207,7 +276,9 @@ export class Pakagify extends EventEmitter {
       files.forEach(dir => {
         if (fs.lstatSync(dir).isDirectory()) {
           zip.addLocalFolder(dir, path.join(prefix, dir))
-        } else zip.addLocalFile(dir, prefix)
+        } else {
+          zip.addLocalFile(dir, prefix)
+        }
       })
 
       zip.addFile('pak.json', Buffer.from(JSON.stringify(packageModel), 'utf8'), '', null)
@@ -221,7 +292,9 @@ export class Pakagify extends EventEmitter {
               value.name === packageModel.name &&
               value.platform === packageModel.platform &&
               value.arch === packageModel.arch
-            ) array.splice(index, 1) // Remove the package from the array
+            ) {
+              array.splice(index, 1)
+            } // Remove the package from the array
           })
 
           // Make a copy and patch the repo data
@@ -255,8 +328,9 @@ export class Pakagify extends EventEmitter {
       })
 
       if (_pkg.length > 1) throw new Error(`Multiple packages found (${packageName}) ${JSON.stringify(_pkg)}`)
-      if (_pkg.length <= 0) throw new Error(`Package not found (${packageName})`)
-      else {
+      if (_pkg.length <= 0) {
+        throw new Error(`Package not found (${packageName})`)
+      } else {
         return this.deleteAsset(user, repoName, `${packageName}-${_pkg.platform}_${_pkg.arch}.pkg.zip`).then(async () => {
           return this.deleteAsset(user, repoName, 'repo.json').then(async () => {
             return await this.pushRepoData(user, repoName, 'repo.json', JSON.stringify(repoData))
@@ -267,7 +341,10 @@ export class Pakagify extends EventEmitter {
   }
 
   async deleteRelease (user, repoName) {
-    return this.#octokit.rest.repos.getLatestRelease({ owner: user, repo: repoName })
+    return this.#octokit.rest.repos.getLatestRelease({
+      owner: user,
+      repo: repoName
+    })
       .then(async rel => {
         if (rel.status !== 200) throw new Error('Unable to delete the repository')
         return await this.#octokit.rest.repos.deleteRelease({
@@ -282,7 +359,10 @@ export class Pakagify extends EventEmitter {
   }
 
   async getLatestRelease (user, repoName) {
-    return await this.#octokit.rest.repos.getLatestRelease({ owner: user, repo: repoName })
+    return await this.#octokit.rest.repos.getLatestRelease({
+      owner: user,
+      repo: repoName
+    })
       .then((rel) => {
         if (rel.status !== 200) throw new Error('Release not found')
         return rel.data
