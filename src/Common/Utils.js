@@ -1,5 +1,7 @@
 import fs from 'fs'
 import * as path from 'path'
+import chalk from 'chalk'
+import { Pakagify } from './Pakagify'
 
 function listFilesRecursively (directory) {
   let fileList = []
@@ -50,4 +52,41 @@ export {
   listFilesRecursively,
   calculateBitrate,
   formatTime
+}
+
+export function processData (token) {
+  if (!processData.instance) processData.instance = new Pakagify(token)
+  return processData.instance
+}
+
+export function validateArch (arch) {
+  // Check if arch is valid
+  if (
+    arch !== 'x86' &&
+    arch !== 'x64' &&
+    arch !== 'armv7' &&
+    arch !== 'arm64' &&
+    arch !== 'noarch'
+  ) {
+    console.error(`${chalk.bold.redBright('Error')} Invalid architecture.`)
+    return false
+  }
+}
+
+export function validatePlatform (platform) {
+  // Check if platform is valid
+  if (
+    platform !== 'linux' &&
+    platform !== 'windows' &&
+    platform !== 'win32' &&
+    platform !== 'darwin' &&
+    platform !== 'any'
+  ) {
+    console.error(`${chalk.bold.redBright('Error')} Invalid platform.`)
+    return false
+  }
+}
+
+export function decodeToken (token) {
+  return Buffer.from(token, 'base64').toString('utf8')
 }
