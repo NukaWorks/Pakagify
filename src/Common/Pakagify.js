@@ -265,32 +265,53 @@ export class Pakagify extends EventEmitter {
       });
   }
 
-  async makePackage(
-    user,
-    repoName,
-    packageName,
-    version,
-    description,
-    installLocation,
-    arch,
-    platform,
-    files,
-    preInst,
-    postInst,
-    restartRequired
-  ) {
+  async makeEmptyPackage(packageName, arch, platform) {
+    const user = await this.getUser();
     const packageModel = PackageModel;
     packageModel.name = packageName;
-    packageModel.version = version;
+    packageModel.version = "1.0.0";
+    packageModel.dependencies = [];
+    packageModel.arch = arch ?? process.arch;
+    packageModel.description = "Empty package";
+    packageModel.install_location = "/";
+    packageModel.platform = platform ?? process.platform;
+    packageModel.author = user?.login ?? "Anonymous";
+    packageModel.restart_required = false;
+    packageModel.scripts.pre_inst = "";
+    packageModel.scripts.post_inst = "";
+    packageModel.last_updated = new Date().toISOString();
+    packageModel.created_at = new Date().toISOString();
+
+    const pkgFolderContents = path.resolve(
+      process.cwd(),
+      `${packageModel.name}-${packageModel.platform}_${packageModel.arch}`,
+      "Contents"
+    );
+    if (!fs.existsSync(pkgFolderContents)) {
+      fs.mkdirSync(pkgFolderContents, { recursive: true });
+    }
+
+    const pakFilePath = path.resolve(pkgFolderContents, "..", "pak.json");
+    if (!fs.existsSync(pakFilePath)) {
+      fs.writeFileSync(pakFilePath, Buffer.from(JSON.stringify(packageModel), { encoding: "utf-8" }));
+    } else {
+      throw new Error("Package already created");
+    }
+  }
+
+  async makePackage(user, repoName, packageName, arch, platform) {
+    const packageModel = PackageModel;
+    packageModel.name = packageName;
+    packageModel.version = "1.0.0";
     packageModel.dependencies = [];
     packageModel.arch = arch || process.arch;
-    packageModel.description = description || "";
-    packageModel.install_location = installLocation;
+    packageModel.description = "Empty package";
+    packageModel.install_location = "/";
     packageModel.platform = platform || process.platform;
     packageModel.author = user;
-    packageModel.restart_required = restartRequired || false;
-    packageModel.scripts.pre_inst = preInst || "";
-    packageModel.scripts.post_inst = postInst || "";
+    packageModel.restart_required = false;
+    packageModel.scripts.pre_inst = "";
+    packageModel.scripts.post_inst = "";
     packageModel.last_updated = new Date().toISOString();
     packageModel.created_at = new Date().toISOString();
 

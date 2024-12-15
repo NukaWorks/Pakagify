@@ -4,11 +4,12 @@ import { ConfigProvider } from "../Common/ConfigProvider";
 import { authCmd } from "../Common/Commands/AuthCommand";
 import { logoutCmd } from "../Common/Commands/LogoutCommand";
 import { whoamiCmd } from "../Common/Commands/WhoamiCommand";
-import { infoRepoCmd } from "../Common/Commands/InfoRepoCommand";
-import { createCmd as mkPkgCmd } from "../Common/Commands/CreateCommand";
+import { pkgInfoCmd } from "../Common/Commands/InfoCommand";
+import { buildPkgCmd } from "../Common/Commands/BuildMkCommand";
 import { deleteCmd } from "../Common/Commands/DeleteCommand";
-import { initCmd as mkRepoCmd } from "../Common/Commands/InitCommand";
-import { retrieveCmd } from "../Common/Commands/RetrieveCommand";
+import { mkRepoCmd } from "../Common/Commands/MkRepoCommand";
+import { retrieveCmd } from "../Common/Commands/RetrieveRepoCommand";
+import { mkPkgCmd } from "../Common/Commands/MkEmptyPkgCommand";
 
 const configProvider = new ConfigProvider();
 let DEBUG_MODE = false;
@@ -40,12 +41,12 @@ function mainCommand(argv) {
     .command("pkginfo <name>")
     .description("Get info about a package...")
     .option("-r, --repository <repository>", "Select the repository for the package")
-    .action((type, name, options) => infoRepoCmd(type, name, options, configProvider, DEBUG_MODE));
+    .action((name, options) => pkgInfoCmd(name, options, configProvider, DEBUG_MODE));
 
   program
     .command("mkrepo <name>")
     .description("Make a new repository ...")
-    .action((type, name, options) => mkRepoCmd(type, name, options, configProvider, DEBUG_MODE));
+    .action((name) => mkRepoCmd(name, configProvider, DEBUG_MODE));
 
   program
     .command("retrieve <name>")
@@ -56,16 +57,33 @@ function mainCommand(argv) {
   program
     .command("mkpkg <name>")
     .description("Make a new empty package ...")
-    .option("-p, --publish <platform>", "Plublish after build")
-    .action((type, name, options) => mkPkgCmd(type, name, options, configProvider, DEBUG_MODE));
+    .option("-a, --arch <arch>", "Architecture of the pkg (x64, i386, arm64, noarch)")
+    .option("-p, --platform <platform>", "Platform of the pkg (win32, darwin, linux, any)")
+    .action((name, options) => mkPkgCmd(name, options, configProvider, DEBUG_MODE));
 
   program
-    .command("delete <type> <name>")
-    .description("Delete a repository, package ...")
+    .command("buildpkg <name>")
+    .description("Build a package ...")
+    .option("-p, --publish", "Publish after build")
+    .action((name, options) => buildPkgCmd(type, name, options, configProvider, DEBUG_MODE));
+
+  program
+    .command("pushpkg <name>")
+    .description("Upload a package ...")
+    .action((name, options) => buildPkgCmd(type, name, options, configProvider, DEBUG_MODE));
+
+  program
+    .command("rmpkg <name>")
+    .description("Delete a package ...")
     .option("-r, --repository <repository>", "Select the repository for the package to delete")
     .option("-a, --arch <arch>", "Architecture of the package")
     .option("-p, --platform <platform>", "Platform of the package")
-    .action((type, name, options) => deleteCmd(type, name, options, configProvider, DEBUG_MODE));
+    .action((name, options) => deleteCmd("package", name, options, configProvider, DEBUG_MODE));
+
+  program
+    .command("rmrepo <name>")
+    .description("Delete a repository ...")
+    .action((name, options) => deleteCmd("repository", name, options, configProvider, DEBUG_MODE));
 
   program.parse(argv);
 }
