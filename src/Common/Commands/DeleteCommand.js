@@ -2,8 +2,8 @@ import chalk from "chalk";
 import { decodeToken, processData } from "../Utils";
 import ora from "ora";
 
-export const deleteCmd = (name, options, configProvider, DEBUG_MODE) => {
-  let userAndName = name.split("/");
+export const deleteCmd = (type, repo, name, options, configProvider, DEBUG_MODE) => {
+  let userAndName = repo.split("/");
 
   if (!configProvider.has("token")) {
     console.error(`${chalk.bold.redBright("Error")} You need to authenticate first.`);
@@ -12,13 +12,7 @@ export const deleteCmd = (name, options, configProvider, DEBUG_MODE) => {
 
   processData(decodeToken(configProvider.get("token")))
     .getUser()
-    .then((user) => {
-      // Check if no org user specified
-      if (userAndName.length <= 1) {
-        userAndName[0] = user.login;
-        userAndName[1] = name;
-      }
-
+    .then(() => {
       if (type === "repository") {
         let latestReleaseTag = processData(decodeToken(configProvider.get("token")))
           .getLatestRelease(userAndName[0], userAndName[1])
@@ -56,50 +50,20 @@ export const deleteCmd = (name, options, configProvider, DEBUG_MODE) => {
             process.exit(1);
           });
       } else if (type === "package") {
-        switch (!options) {
-          case options.arch: {
-            console.error(`${chalk.bold.redBright("Error")} You need to specify the architecture.`);
-            return process.exit(1);
-          }
-
-          case options.platform: {
-            console.error(`${chalk.bold.redBright("Error")} You need to specify the platform.`);
-            return process.exit(1);
-          }
-        }
-
-        userAndName = options.repository.split("/");
-        // Check if no org user specified
-        if (userAndName.length <= 1) {
-          userAndName[0] = user.login;
-          userAndName[1] = options.repository;
-        }
-
         if (!configProvider.has("token")) {
           console.error(`${chalk.bold.redBright("Error")} You need to authenticate first.`);
           process.exit(1);
         }
 
-        switch (!options) {
-          case options.repository: {
-            console.error(`${chalk.bold.redBright("Error")} You need to specify the repository.`);
-            return process.exit(1);
-          }
-        }
-
         const spinner = ora("Deleting package...").start();
         processData(decodeToken(configProvider.get("token")))
-          .deletePackage(userAndName[0], userAndName[1], name, options.arch, options.platform)
+          .deletePackage(userAndName[0], userAndName[1], name)
           .then((res) => {
-            spinner.succeed(
-              `${chalk.bold.greenBright("Successfully")} deleted package ${chalk.bold.white(userAndName[1])} !`
-            );
+            spinner.succeed(`${chalk.bold.greenBright("Successfully")} deleted package ${chalk.bold.white(name)} !`);
             DEBUG_MODE && console.debug(res);
           })
           .catch((err) => {
-            spinner.fail(
-              `${chalk.bold.redBright("Error")} while deleting package ${chalk.bold.white(userAndName[1])} !`
-            );
+            spinner.fail(`${chalk.bold.redBright("Error")} while deleting package ${chalk.bold.white(name)}: ${err}`);
             DEBUG_MODE && console.debug(err);
           });
       } else {

@@ -3,18 +3,23 @@ import * as path from "path";
 import chalk from "chalk";
 import { Pakagify } from "./Pakagify";
 
-function listFilesRecursively(directory) {
+function listFilesRecursively(parent, directories) {
   let fileList = [];
 
-  for (const element of directory) {
-    const fullPath = path.join(element).replace(/\\/g, "/");
+  for (const element of directories) {
+    const fullPath = path.join(parent, element).replace(/\\/g, "/");
     const stats = fs.statSync(fullPath);
     if (stats.isDirectory()) {
       fileList = fileList.concat(
-        listFilesRecursively(fs.readdirSync(fullPath).map((file) => path.join(fullPath, file).replace(/\\/g, "/")))
+        listFilesRecursively(
+          "",
+          fs.readdirSync(fullPath).map((file) => path.join(fullPath, file).replace(/\\/g, "/"))
+        )
       );
     } else if (stats.isFile()) {
-      fileList.push(fullPath);
+      const splicedPath = path.dirname(fullPath).split("/").splice(0, 2).join("/");
+      const updatedPath = fullPath.replace(splicedPath, "").substring(1);
+      fileList.push(updatedPath);
     }
   }
 
@@ -22,13 +27,10 @@ function listFilesRecursively(directory) {
 }
 
 function calculateBitrate(bytesDownloaded, downloadTimeSeconds) {
-  // Calculate the bitrate in bytes per second
   const bytesPerSecond = bytesDownloaded / downloadTimeSeconds;
 
-  // Convert bytes per second to megabytes per second
   const megabytesPerSecond = bytesPerSecond / 1024 ** 2;
 
-  // Choose the appropriate unit based on the bitrate value
   let unit = "B/s";
   let bitrate = bytesPerSecond;
   if (megabytesPerSecond >= 1) {
@@ -39,7 +41,6 @@ function calculateBitrate(bytesDownloaded, downloadTimeSeconds) {
     bitrate = bytesPerSecond / 1024;
   }
 
-  // Return the calculated bitrate with the appropriate unit, rounded to two decimal places
   return `${bitrate.toFixed(2)} ${unit}`;
 }
 

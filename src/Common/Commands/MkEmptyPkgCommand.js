@@ -35,11 +35,7 @@ export const mkPkgCmd = (name, options, configProvider, DEBUG_MODE) => {
       processData(decodeToken(configProvider.get("token")))
         .makeEmptyPackage(name, options.arch, options.platform)
         .then((r) => {
-          spinner.succeed(
-            `${chalk.bold.greenBright("Successfully")} created package ${chalk.bold.white(name)} ${chalk.grey(
-              `(${options.version}, ${options.arch}, ${options.platform})`
-            )} !`
-          );
+          spinner.succeed(`${chalk.bold.greenBright("Successfully")} created package ${chalk.bold.white(name)} !`);
           DEBUG_MODE && console.debug(r);
         })
         .catch((err) => {

@@ -10,6 +10,7 @@ import { deleteCmd } from "../Common/Commands/DeleteCommand";
 import { mkRepoCmd } from "../Common/Commands/MkRepoCommand";
 import { retrieveCmd } from "../Common/Commands/RetrieveRepoCommand";
 import { mkPkgCmd } from "../Common/Commands/MkEmptyPkgCommand";
+import { pushPkgCmd } from "../Common/Commands/PushPkgCommand";
 
 const configProvider = new ConfigProvider();
 let DEBUG_MODE = false;
@@ -62,23 +63,19 @@ function mainCommand(argv) {
     .action((name, options) => mkPkgCmd(name, options, configProvider, DEBUG_MODE));
 
   program
-    .command("buildpkg <name>")
+    .command("buildpkg <repo> <name>")
     .description("Build a package ...")
-    .option("-p, --publish", "Publish after build")
-    .action((name, options) => buildPkgCmd(type, name, options, configProvider, DEBUG_MODE));
+    .action((repo, name, options) => buildPkgCmd(repo, name, options, configProvider, DEBUG_MODE));
 
   program
-    .command("pushpkg <name>")
+    .command("pushpkg <repo> <name>")
     .description("Upload a package ...")
-    .action((name, options) => buildPkgCmd(type, name, options, configProvider, DEBUG_MODE));
+    .action((repo, name, options) => pushPkgCmd(repo, name, options, configProvider, DEBUG_MODE));
 
   program
-    .command("rmpkg <name>")
+    .command("rmpkg <repo> <name>")
     .description("Delete a package ...")
-    .option("-r, --repository <repository>", "Select the repository for the package to delete")
-    .option("-a, --arch <arch>", "Architecture of the package")
-    .option("-p, --platform <platform>", "Platform of the package")
-    .action((name, options) => deleteCmd("package", name, options, configProvider, DEBUG_MODE));
+    .action((repo, name, options) => deleteCmd("package", repo, name, options, configProvider, DEBUG_MODE));
 
   program
     .command("rmrepo <name>")

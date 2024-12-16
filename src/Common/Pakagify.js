@@ -8,6 +8,7 @@ import fs from "fs";
 import axios from "axios";
 import { EventEmitter } from "events";
 import * as path from "path";
+import { log } from "console";
 
 export class Pakagify extends EventEmitter {
   #ghToken = "";
@@ -157,9 +158,7 @@ export class Pakagify extends EventEmitter {
               repo: repoName,
               asset_id: asset.id,
             })
-            .then(async (res) => {
-              return res;
-            })
+            .then((res) => res)
             .catch((err) => {
               console.error(err);
             });
@@ -299,94 +298,122 @@ export class Pakagify extends EventEmitter {
     }
   }
 
-  async makePackage(user, repoName, packageName, arch, platform) {
-    const packageModel = PackageModel;
-    packageModel.name = packageName;
-    packageModel.version = "1.0.0";
-    packageModel.dependencies = [];
-    packageModel.arch = arch || process.arch;
-    packageModel.description = "Empty package";
-    packageModel.install_location = "/";
-    packageModel.platform = platform || process.platform;
-    packageModel.author = user;
-    packageModel.restart_required = false;
-    packageModel.scripts.pre_inst = "";
-    packageModel.scripts.post_inst = "";
-    packageModel.last_updated = new Date().toISOString();
-    packageModel.created_at = new Date().toISOString();
+  async getLocalPackage(packageFolder) {
+    const folderPath = path.resolve(process.cwd(), packageFolder);
+    if (!fs.existsSync(folderPath)) {
+      throw new Error("Package folder not found");
+    }
+
+    const pakFilePath = path.resolve(process.cwd(), packageFolder, "pak.json");
+
+    if (!fs.existsSync(pakFilePath)) {
+      throw new Error("Package manifest file not found");
+    }
+
+    const pakFile = fs.readFileSync(pakFilePath);
+    if (!pakFile || pakFile.length <= 0) {
+      throw new Error("Invalid pak.json json file");
+    }
+
+    return JSON.parse(pakFile);
+  }
+
+  async publishPackage(user, repoName, packageFolder) {
+    let packageModel = await this.getLocalPackage(packageFolder);
+    const pkgFolder = `${packageModel.name}-${packageModel.platform}_${packageModel.arch}`;
 
     return await this.getLatestRelease(user, repoName).then(async (release) => {
-      const _pkName = `${packageName}-${platform}_${arch}.pkg.zip`;
+      const _pkName = `${pkgFolder}.pkg.zip`;
       for (const asset of release.assets) {
-        if (asset.name === _pkName) throw new Error(`Package already exists (${packageName})`);
+        if (asset.name === _pkName) throw new Error(`Package already exists (${packageModel.name})`);
       }
+      // Fetch the repo data
+      return this.getPakRepositoryData(user, repoName).then(async (repoData) => {
+        // Checks if the package already exists on the repo, if so, delete it (in case of update)
+        repoData.packages.forEach((value, index, array) => {
+          if (
+            value.name === packageModel.name &&
+            value.platform === packageModel.platform &&
+            value.arch === packageModel.arch
+          ) {
+            array.splice(index, 1);
+          } // Remove the package from the array
+        });
+
+        // Make a copy and patch the repo data
+        const repoDataPatch = repoData;
+        repoDataPatch.packages.push(packageModel);
+        repoDataPatch.last_updated = new Date().toISOString();
+
+        // Upload the asset
+        return this.pushRepoData(
+          user,
+          repoName,
+          `${pkgFolder}.pkg.zip`,
+          Buffer.from(fs.readFileSync(`${pkgFolder}.pkg.zip`))
+        )
+          .then(async () => {
+            await this.deleteAsset(user, repoName, "repo.json");
+            return await await this.pushRepoData(user, repoName, "repo.json", JSON.stringify(repoDataPatch));
+          })
+          .catch((err) => {
+            throw new Error(`Error uploading the package (${packageName}) - ${err.message}`);
+          });
+      });
+    });
+  }
+
+  async buildPackage(user, repoName, packageFolder) {
+    let packageModel = await this.getLocalPackage(packageFolder);
+
+    return await this.getLatestRelease(user, repoName).then(async (release) => {
+      const _pkName = `${packageModel.name}-${packageModel.platform}_${packageModel.arch}.pkg.zip`;
       packageModel.release_url = release.html_url;
       packageModel.download_url = `${release.html_url}/download/${_pkName}`;
       // https://api.github.com/repos/OWNER/REPO/releases/assets/ASSET_ID
       packageModel.download_url = `https://github.com/${user}/${repoName}/releases/download/${release.tag_name}/${_pkName}`;
 
-      // Make a zip file with adm-zip
-      const zip = new AdmZip("", undefined);
-      packageModel.files = listFilesRecursively(files);
-
       const prefix = "/Contents";
+      const zip = new AdmZip("", undefined);
+      const pkgFolder = `${packageModel.name}-${packageModel.platform}_${packageModel.arch}`;
+      const pkgFolderWithPrefix = path.join(pkgFolder, prefix);
+      const pkgContentsFiles = fs.readdirSync(pkgFolderWithPrefix);
+      packageModel.files = listFilesRecursively(pkgFolderWithPrefix, pkgContentsFiles);
+      packageModel.last_updated = new Date().toISOString();
 
-      files.forEach((dir) => {
-        if (fs.lstatSync(dir).isDirectory()) {
-          zip.addLocalFolder(dir, path.join(prefix, dir));
+      const pkgRootFiles = fs.readdirSync(path.join(process.cwd(), pkgFolder));
+      pkgRootFiles.forEach((dir) => {
+        const fullPath = path.join(pkgFolder, dir);
+        if (path.basename(fullPath) === "pak.json") {
+          return;
+        }
+
+        if (fs.lstatSync(fullPath).isDirectory()) {
+          zip.addLocalFolder(fullPath, prefix);
         } else {
-          zip.addLocalFile(dir, prefix);
+          zip.addLocalFile(fullPath, prefix);
         }
       });
 
-      zip.addFile("pak.json", Buffer.from(JSON.stringify(packageModel), "utf8"), "", null);
-
-      return zip.writeZipPromise(`${packageName}-${platform}_${arch}.pkg.zip`, null).then(() => {
-        // Fetch the repo data
-        return this.getPakRepositoryData(user, repoName).then(async (repoData) => {
-          // Checks if the package already exists on the repo, if so, delete it (in case of update)
-          repoData.packages.forEach((value, index, array) => {
-            if (
-              value.name === packageModel.name &&
-              value.platform === packageModel.platform &&
-              value.arch === packageModel.arch
-            ) {
-              array.splice(index, 1);
-            } // Remove the package from the array
-          });
-
-          // Make a copy and patch the repo data
-          const repoDataPatch = repoData;
-          repoDataPatch.packages.push(packageModel);
-          repoDataPatch.last_updated = new Date().toISOString();
-
-          // Upload the asset
-          return this.pushRepoData(
-            user,
-            repoName,
-            `${packageName}-${platform}_${arch}.pkg.zip`,
-            Buffer.from(fs.readFileSync(`${packageName}-${platform}_${arch}.pkg.zip`))
-          )
-            .then(() => {
-              return this.deleteAsset(user, repoName, "repo.json").then(async () => {
-                return await this.pushRepoData(user, repoName, "repo.json", JSON.stringify(repoDataPatch));
-              });
-            })
-            .catch((err) => {
-              throw new Error(`Error uploading the package (${packageName}) - ${err.message}`);
-            });
-        });
-      });
+      const pakFileBuffer = Buffer.from(JSON.stringify(packageModel), "utf8");
+      fs.writeFileSync(path.join(pkgFolder, "pak.json"), pakFileBuffer);
+      zip.addFile("pak.json", pakFileBuffer, "", null);
+      return zip.writeZipPromise(`${pkgFolder}.pkg.zip`, null);
     });
   }
 
-  async deletePackage(user, repoName, packageName, arch, platform) {
+  async deletePackage(user, repoName, packageName) {
     return this.getPakRepositoryData(user, repoName).then(async (repoData) => {
       if (repoData.packages.length === 0) throw new Error("No packages found");
 
       const _pkg = [];
+      const name = packageName.split("-")[0];
+      const descriptors = packageName.split("-")[1].split("_");
+      const platform = descriptors[0];
+      const arch = descriptors[1];
+
       await repoData.packages.forEach((value, index, array) => {
-        if (packageName === value.name && arch === value.arch && platform === value.platform)
+        if (name === value.name && arch === value.arch && platform === value.platform)
           array.splice(index, 1) && _pkg.push(value);
       });
 
@@ -394,13 +421,9 @@ export class Pakagify extends EventEmitter {
       if (_pkg.length <= 0) {
         throw new Error(`Package not found (${packageName})`);
       } else {
-        return this.deleteAsset(user, repoName, `${packageName}-${_pkg.platform}_${_pkg.arch}.pkg.zip`).then(
-          async () => {
-            return this.deleteAsset(user, repoName, "repo.json").then(async () => {
-              return await this.pushRepoData(user, repoName, "repo.json", JSON.stringify(repoData));
-            });
-          }
-        );
+        await this.deleteAsset(user, repoName, `${packageName}.pkg.zip`);
+        await this.deleteAsset(user, repoName, "repo.json");
+        return this.pushRepoData(user, repoName, "repo.json", JSON.stringify(repoData));
       }
     });
   }
