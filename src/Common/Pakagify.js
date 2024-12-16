@@ -208,15 +208,19 @@ export class Pakagify extends EventEmitter {
   }
 
   async getPackageData(user, repoName, packageName) {
-    return this.getPakRepositoryData(user, repoName).then((repo) => {
-      repo.packages.forEach((pkg) => {
-        if (pkg.name === packageName) {
-          return pkg;
-        } else {
-          throw new Error(`Package not found (${packageName})`);
-        }
-      });
-    });
+    const name = packageName.split("-")[0];
+    const descriptors = packageName.split("-")[1].split("_");
+    const platform = descriptors[0];
+    const arch = descriptors[1];
+
+    const repo = await this.getPakRepositoryData(user, repoName);
+    for (const pkg of repo.packages) {
+      if (pkg.name === name && pkg.arch === arch && pkg.platform === platform) {
+        return pkg;
+      }
+    }
+
+    throw new Error(`Package not found (${packageName})`);
   }
 
   async makeRepository(user, repoName, isDebug, isLocalRepository) {

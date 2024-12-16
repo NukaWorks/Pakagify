@@ -39,10 +39,9 @@ function mainCommand(argv) {
     .action(() => whoamiCmd(configProvider, DEBUG_MODE));
 
   program
-    .command("pkginfo <name>")
+    .command("pkginfo <repo> <name>")
     .description("Get info about a package...")
-    .option("-r, --repository <repository>", "Select the repository for the package")
-    .action((name, options) => pkgInfoCmd(name, options, configProvider, DEBUG_MODE));
+    .action((repo, name) => pkgInfoCmd(repo, name, configProvider, DEBUG_MODE));
 
   program
     .command("mkrepo <name>")
