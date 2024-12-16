@@ -5,9 +5,9 @@ permissions:
 on:
   push:
     branches:
-      - 'prod'
+      - "prod"
     tags:
-        - '*'
+      - "v*"
 
 jobs:
   build:
@@ -34,7 +34,7 @@ jobs:
 
   publish:
     name: 🛠 Publish artifacts
-    needs: [ build ]
+    needs: [build]
     runs-on: ubuntu-latest
     steps:
       - name: Download all workflow run artifacts
