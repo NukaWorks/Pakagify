@@ -1,10 +1,14 @@
-import React from "react";
+import { useState } from "react";
 import { AppHeader, Button, FlexLayout, Menu, MenuBar, MenuItem, MenuList } from "@nwrks/uikit";
 import { commercial_name } from "../../../package.json";
-import PropTypes from "prop-types";
+import { AboutDialog } from "../../PkDash/Dialogs/AboutDialog";
+import { RepositoryCreatorDialog } from "../../PkDash/Dialogs/RepositoryCreatorDialog";
+import { ProjectExplorerDialog } from "../../PkDash/Dialogs/ProjectExplorerDialog";
 
-export default function Header({ displayBackground }) {
-  // const context = React.useContext(DialogOverlayContext)
+export function Header({ displayBackground }: Readonly<{ displayBackground: boolean }>) {
+  const [aboutOpen, setAboutOpen] = useState(false);
+  const [openRepoCreator, setOpenRepoCreator] = useState(false);
+  const [projectExplorerOpen, setProjectExplorerOpen] = useState(false);
 
   return (
     <AppHeader title={"Pakagify"} style={{ paddingBlock: 25 }} displayBackground={displayBackground}>
@@ -12,16 +16,8 @@ export default function Header({ displayBackground }) {
         <MenuBar>
           <Menu title={"Actions"}>
             <MenuList>
-              <MenuItem
-                onClick={() => window.localStorage.getItem("gh-token") && openDialogOverlay(context, "repo-creator")}
-              >
-                New...
-              </MenuItem>
-              <MenuItem
-                onClick={() => window.localStorage.getItem("gh-token") && openDialogOverlay(context, "repo-explorer")}
-              >
-                Open Repository...
-              </MenuItem>
+              <MenuItem onClick={() => setOpenRepoCreator(true)}>New...</MenuItem>
+              <MenuItem onClick={() => setProjectExplorerOpen(true)}>Open Repository...</MenuItem>
               <MenuItem>Build Project</MenuItem>
               <MenuItem>Sync Repository</MenuItem>
               <MenuItem>Push Changes...</MenuItem>
@@ -39,7 +35,7 @@ export default function Header({ displayBackground }) {
           <Menu title={"Help"}>
             <MenuList>
               <MenuItem>Getting Help...</MenuItem>
-              {/* <MenuItem onClick={() => openDialogOverlay(context, 'about')}>About {commercial_name}...</MenuItem> */}
+              <MenuItem onClick={() => setAboutOpen(true)}>About {commercial_name}...</MenuItem>
             </MenuList>
           </Menu>
         </MenuBar>
@@ -50,10 +46,10 @@ export default function Header({ displayBackground }) {
           <Button color={"Alert"}>Push</Button>
         </div>
       </FlexLayout>
+
+      <AboutDialog open={aboutOpen} onClose={() => setAboutOpen(false)} />
+      <RepositoryCreatorDialog open={openRepoCreator} onClose={() => setOpenRepoCreator(false)} />
+      <ProjectExplorerDialog open={projectExplorerOpen} onClose={() => setProjectExplorerOpen(false)} />
     </AppHeader>
   );
 }
-
-Header.propTypes = {
-  displayBackground: PropTypes.bool,
-};

@@ -1,9 +1,8 @@
-import React from "react";
 import { AppActivity, StackLayout, Tab, TabList, TabPanel, Tabs, UiApp } from "@nwrks/uikit";
-import Header from "../../Common/UiComponents/Header";
+import { Header } from "../../Common/UiComponents/Header";
 import ProjectSettings from "./Tabs/ProjectSettings";
-import Packages from "./Tabs/Packages";
-import Releases from "./Tabs/Releases";
+import { Releases } from "./Tabs/Releases";
+import { Packages } from "./Tabs/Packages";
 
 export default function ProjectView() {
   return (
@@ -14,20 +13,20 @@ export default function ProjectView() {
         <StackLayout direction={"Vertical"}>
           <Tabs>
             <TabList>
-              <Tab>Releases</Tab>
-              <Tab>Packages</Tab>
-              <Tab>Settings</Tab>
+              <Tab id={"releases"}>Releases</Tab>
+              <Tab id={"packages"}>Packages</Tab>
+              <Tab id={"settings"}>Settings</Tab>
             </TabList>
 
-            <TabPanel>
+            <TabPanel id={"releases"}>
               <Releases />
             </TabPanel>
 
-            <TabPanel>
+            <TabPanel id={"packages"}>
               <Packages />
             </TabPanel>
 
-            <TabPanel>
+            <TabPanel id={"settings"}>
               <ProjectSettings />
             </TabPanel>
           </Tabs>

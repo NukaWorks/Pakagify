@@ -1,6 +1,6 @@
 import { Button, Dialog, FlexLayout, Link, StackLayout, Text } from "@nwrks/uikit";
 
-export function AboutDialog({ open, onClose }: Readonly<{ open: boolean; onClose: () => {} }>) {
+export function AboutDialog({ open, onClose }: Readonly<{ open: boolean; onClose: () => void }>) {
   return (
     <Dialog open={open} onClose={onClose}>
       <FlexLayout direction={"Vertical"} spacing={15}>

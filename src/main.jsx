@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import App from "./PkDash/App.jsx";
+import App from "./PkDash/App";
 import "./Common/Styling/app.scss";
 import "@nwrks/uikit/styling";
 
