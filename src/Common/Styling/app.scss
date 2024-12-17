@@ -1,4 +1,6 @@
-.App, body, * {
+.App,
+body,
+* {
   padding: 0;
   margin: 0;
   box-sizing: border-box;
@@ -7,16 +9,6 @@
 }
 
 .App {
-  &__Header {
-    padding: 10px 5px;
-
-    &--Title {
-      font-family: "Outfit", sans-serif;
-      font-size: 2.5rem;
-      font-weight: 600;
-    }
-  }
-
   &__SidePanel {
     display: flex;
     flex-direction: column;

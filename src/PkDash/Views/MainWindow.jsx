@@ -1,16 +1,14 @@
-import React from 'react'
-import ProjectView from './ProjectView'
-import { MemoryRouter, Route, Routes } from 'react-router'
-import RecentView from './RecentView'
+import ProjectView from "./ProjectView";
+import { MemoryRouter, Route, Routes } from "react-router";
+import RecentView from "./RecentView";
 
-export default function MainWindow () {
+export default function MainWindow() {
   return (
-    <MemoryRouter initialEntries={['/project']}>
+    <MemoryRouter initialEntries={["/project"]}>
       <Routes>
-        <Route path={'/'} element={<RecentView />} />
-        <Route path={'/project'} element={<ProjectView />} />
+        <Route path={"/"} element={<RecentView />} />
+        <Route path={"/project"} element={<ProjectView />} />
       </Routes>
-
     </MemoryRouter>
-  )
+  );
 }

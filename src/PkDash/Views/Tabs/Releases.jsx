@@ -1,10 +1,12 @@
-import React from 'react'
-import { StackLayout, Text } from '@powerws/uikit'
+import React from "react";
+import { StackLayout, Text } from "@nwrks/uikit";
 
-export default function Releases () {
+export default function Releases() {
   return (
     <StackLayout>
-      <Text size={24} style={{ fontWeight: 700 }}>Releases</Text>
+      <Text size={24} style={{ fontWeight: 700 }}>
+        Releases
+      </Text>
     </StackLayout>
-  )
+  );
 }

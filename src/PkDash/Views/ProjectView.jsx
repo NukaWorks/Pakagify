@@ -1,17 +1,17 @@
-import React from 'react'
-import { AppActivity, StackLayout, Tab, TabList, TabPanel, Tabs, UiApp } from '@powerws/uikit'
-import Header from '../../Common/UiComponents/Header'
-import ProjectSettings from './Tabs/ProjectSettings'
-import Packages from './Tabs/Packages'
-import Releases from './Tabs/Releases'
+import React from "react";
+import { AppActivity, StackLayout, Tab, TabList, TabPanel, Tabs, UiApp } from "@nwrks/uikit";
+import Header from "../../Common/UiComponents/Header";
+import ProjectSettings from "./Tabs/ProjectSettings";
+import Packages from "./Tabs/Packages";
+import Releases from "./Tabs/Releases";
 
-export default function ProjectView () {
+export default function ProjectView() {
   return (
-    <AppActivity theme={'Light'} direction={'Vertical'}>
+    <AppActivity theme={"Light"} direction={"Vertical"}>
       <Header displayBackground={false} />
 
       <UiApp>
-        <StackLayout direction={'Vertical'}>
+        <StackLayout direction={"Vertical"}>
           <Tabs>
             <TabList>
               <Tab>Releases</Tab>
@@ -34,5 +34,5 @@ export default function ProjectView () {
         </StackLayout>
       </UiApp>
     </AppActivity>
-  )
+  );
 }
