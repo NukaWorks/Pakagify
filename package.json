@@ -3,30 +3,15 @@
   "commercial_name": "Pakagify",
   "private": true,
   "version": "2.0.0",
+  "workspaces": [
+    "src/PkDash/",
+    "src/PkCli/"
+  ],
   "scripts": {
     "dev:pkdash": "vite --host --port 5123",
     "dev:pkcli": "rm -rf build && mkdir build && esbuild --bundle src/PkCli/Pakagify.cli.js --platform=node --outfile=build/pkcli.js && node build/pkcli.js",
     "build:pkcli": "rm -rf build && mkdir build && esbuild --minify --bundle src/PkCli/Pakagify.cli.js --platform=node --outfile=dist/pkcli.js && pkg --compress GZip dist/pkcli.js --out-path dist",
     "build:pkdash": "vite build"
-  },
-  "dependencies": {
-    "@nwrks/uikit": "^0.225.11",
-    "@octokit/core": "^6.1.1",
-    "adm-zip": "^0.5.10",
-    "axios": "^1.6.7",
-    "chalk": "^5.2.0",
-    "cli-spinners": "^2.7.0",
-    "commander": "^12.1.0",
-    "events": "^3.3.0",
-    "isomorphic-fetch": "^3.0.0",
-    "octokit": "^4.0.2",
-    "ora": "^6.1.2",
-    "react": "^18.2.0",
-    "react-detect-click-outside": "^1.1.7",
-    "react-dom": "^18.2.0",
-    "react-router": "^7.0.2",
-    "styled-components": "^5.3.6",
-    "uuid": "^9.0.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.17.0",
@@ -48,5 +33,6 @@
     "typescript-eslint": "^8.18.1",
     "vite": "^5.0.12",
     "vite-plugin-eslint": "^1.8.1"
-  }
+  },
+  "packageManager": "yarn@4.5.3"
 }
