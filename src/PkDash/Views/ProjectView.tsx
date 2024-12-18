@@ -7,13 +7,19 @@ import { useState } from "react";
 
 export default function ProjectView() {
   const [tabSelected, setTabSelected] = useState(0);
+
+  function handleChangeTab(event: number) {
+    console.log("handleChangeTab() called:", event);
+    setTabSelected(event);
+  }
+
   return (
     <AppActivity theme={"Light"} direction={"Vertical"}>
       <Header displayBackground={false} />
 
       <UiApp>
         <StackLayout direction={"Vertical"}>
-          <Tabs selectedIndex={tabSelected} onSelect={(e) => setTabSelected(e)}>
+          <Tabs defaultIndex={0} selectedIndex={tabSelected} onSelect={handleChangeTab}>
             <TabList>
               <Tab id={"releases"}>Releases</Tab>
               <Tab id={"packages"}>Packages</Tab>
