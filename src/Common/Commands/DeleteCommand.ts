@@ -3,7 +3,7 @@ import { decodeToken, processData } from "../Utils";
 import ora from "ora";
 
 export const deleteCmd = (type, repo, name, options, configProvider, DEBUG_MODE) => {
-  let userAndName = repo.split("/");
+  const userAndName = repo.split("/");
 
   if (!configProvider.has("token")) {
     console.error(`${chalk.bold.redBright("Error")} You need to authenticate first.`);

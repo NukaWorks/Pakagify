@@ -15,9 +15,9 @@ import { pushPkgCmd } from "../Common/Commands/PushPkgCommand";
 const configProvider = new ConfigProvider();
 let DEBUG_MODE = false;
 
-function mainCommand(argv) {
+function mainCommand(argv: Array<string>) {
   // Debug mode
-  argv.forEach((arg) => {
+  argv.forEach((arg: string) => {
     if (arg.match("-D")) DEBUG_MODE = true;
   });
 
@@ -76,10 +76,10 @@ function mainCommand(argv) {
     .description("Delete a package ...")
     .action((repo, name, options) => deleteCmd("package", repo, name, options, configProvider, DEBUG_MODE));
 
-  program
-    .command("rmrepo <name>")
-    .description("Delete a repository ...")
-    .action((name, options) => deleteCmd("repository", name, options, configProvider, DEBUG_MODE));
+  // program
+  //   .command("rmrepo <name>")
+  //   .description("Delete a repository ...")
+  //   .action((name, options) => deleteCmd("repository", name, options, configProvider, DEBUG_MODE, null));
 
   program.parse(argv);
 }

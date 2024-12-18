@@ -8,23 +8,23 @@ import fs from "fs";
 import axios from "axios";
 import { EventEmitter } from "events";
 import * as path from "path";
-import { log } from "console";
 
 export class Pakagify extends EventEmitter {
-  #ghToken = "";
-  #user = null;
-  #reposData = new Map();
-  #octokit = null;
+  ghToken = "";
+  user = null;
+  reposData = new Map();
+  private readonly octokit: Octokit = new Octokit({});
 
-  constructor(token) {
+  constructor(token: string) {
     super();
-    this.#ghToken = token;
-    this.#octokit = new Octokit({ auth: token });
+    this.ghToken = token;
+    // TODO: Improve Octokit init
+    this.octokit = new Octokit({ auth: token });
   }
 
   async createRelease(user, repoName) {
     const uuid = uuidv4().split("-")[1]; // Generate & Get the first part of the uuid
-    return await this.#octokit.rest.repos
+    return await this.octokit.rest.repos
       .createRelease({
         owner: user,
         repo: repoName,
@@ -36,7 +36,7 @@ export class Pakagify extends EventEmitter {
   }
 
   async pushRepoData(user, repoName, fileName, fileData) {
-    return this.#octokit.rest.repos
+    return this.octokit.rest.repos
       .getLatestRelease({
         owner: user,
         repo: repoName,
@@ -48,7 +48,7 @@ export class Pakagify extends EventEmitter {
 
         const axiosOpts = {
           headers: {
-            Authorization: "Bearer " + this.#ghToken,
+            Authorization: "Bearer " + this.ghToken,
             "Content-Type": "application/octet-stream",
             "Content-Length": fileSize,
           },
@@ -80,7 +80,7 @@ export class Pakagify extends EventEmitter {
   }
 
   async downloadRepoData(user, repoName, DEBUG_MODE) {
-    return await this.#octokit.rest.repos
+    return await this.octokit.rest.repos
       .getLatestRelease({
         owner: user,
         repo: repoName,
@@ -100,7 +100,7 @@ export class Pakagify extends EventEmitter {
           const axiosOpts = {
             responseType: "stream",
             headers: {
-              Authorization: "Bearer " + this.#ghToken,
+              Authorization: "Bearer " + this.ghToken,
             },
             onDownloadProgress: (progressEvent) => {
               const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
@@ -152,7 +152,7 @@ export class Pakagify extends EventEmitter {
     return this.getLatestRelease(user, repoName).then(async (rel) => {
       for (const asset of rel.assets) {
         if (asset.name === assetName) {
-          await this.#octokit.rest.repos
+          await this.octokit.rest.repos
             .deleteReleaseAsset({
               owner: user,
               repo: repoName,
@@ -168,7 +168,7 @@ export class Pakagify extends EventEmitter {
   }
 
   async getGitRepositoryData(user, repoName) {
-    return this.#octokit.rest.repos
+    return this.octokit.rest.repos
       .get({
         owner: user,
         repo: repoName,
@@ -185,7 +185,7 @@ export class Pakagify extends EventEmitter {
   async getPakRepositoryData(user, repoName) {
     const axiosOpts = {
       headers: {
-        Authorization: "Bearer " + this.#ghToken,
+        Authorization: "Bearer " + this.ghToken,
         Accept: "application/octet-stream",
       },
     };
@@ -323,7 +323,7 @@ export class Pakagify extends EventEmitter {
   }
 
   async publishPackage(user, repoName, packageFolder) {
-    let packageModel = await this.getLocalPackage(packageFolder);
+    const packageModel = await this.getLocalPackage(packageFolder);
     const pkgFolder = `${packageModel.name}-${packageModel.platform}_${packageModel.arch}`;
 
     return await this.getLatestRelease(user, repoName).then(async (release) => {
@@ -368,7 +368,7 @@ export class Pakagify extends EventEmitter {
   }
 
   async buildPackage(user, repoName, packageFolder) {
-    let packageModel = await this.getLocalPackage(packageFolder);
+    const packageModel = await this.getLocalPackage(packageFolder);
 
     return await this.getLatestRelease(user, repoName).then(async (release) => {
       const _pkName = `${packageModel.name}-${packageModel.platform}_${packageModel.arch}.pkg.zip`;
@@ -433,14 +433,14 @@ export class Pakagify extends EventEmitter {
   }
 
   async deleteRelease(user, repoName) {
-    return this.#octokit.rest.repos
+    return this.octokit.rest.repos
       .getLatestRelease({
         owner: user,
         repo: repoName,
       })
       .then(async (rel) => {
         if (rel.status !== 200) throw new Error("Unable to delete the repository");
-        return await this.#octokit.rest.repos.deleteRelease({
+        return await this.octokit.rest.repos.deleteRelease({
           owner: user,
           repo: repoName,
           release_id: rel.data.id,
@@ -454,7 +454,7 @@ export class Pakagify extends EventEmitter {
   }
 
   async getLatestRelease(user, repoName) {
-    return await this.#octokit.rest.repos
+    return await this.octokit.rest.repos
       .getLatestRelease({
         owner: user,
         repo: repoName,
@@ -471,28 +471,28 @@ export class Pakagify extends EventEmitter {
   }
 
   async getUser(refresh) {
-    if (!this.#user || refresh) {
-      await this.#octokit.rest.users.getAuthenticated().then(({ data }) => {
-        this.#user = data;
+    if (!this.user || refresh) {
+      await this.octokit.rest.users.getAuthenticated().then(({ data }) => {
+        this.user = data;
       });
     }
 
-    return this.#user;
+    return this.user;
   }
 
   async getUserRepos() {
-    return await this.#octokit.rest.repos.listForAuthenticatedUser();
+    return await this.octokit.rest.repos.listForAuthenticatedUser();
   }
 
   async getOrgRepos(org) {
-    return await this.#octokit.rest.repos.listForOrg({ org });
+    return await this.octokit.rest.repos.listForOrg({ org });
   }
 
   getRepoData() {
-    return this.#reposData;
+    return this.reposData;
   }
 
   async getOrgs() {
-    return await this.#octokit.rest.orgs.listForAuthenticatedUser();
+    return await this.octokit.rest.orgs.listForAuthenticatedUser();
   }
 }
