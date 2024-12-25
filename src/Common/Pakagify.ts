@@ -13,13 +13,13 @@ export class Pakagify extends EventEmitter {
   ghToken = "";
   user = null;
   reposData = new Map();
-  private readonly octokit: Octokit = new Octokit({});
+  private readonly octokit: Octokit = new Octokit({ auth: this.ghToken });
 
   constructor(token: string) {
     super();
     this.ghToken = token;
     // TODO: Improve Octokit init
-    this.octokit = new Octokit({ auth: token });
+    // this.octokit = new Octokit({ auth: token });
   }
 
   async createRelease(user, repoName) {
